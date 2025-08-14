@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Interface Prototype</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/framer-motion@11.0.3/dist/framer-motion.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .dot-grid-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            perspective: 800px;
+            transform-style: preserve-3d;
+        }
+
+        .dot-grid-surface {
+            position: absolute;
+            width: 150%;
+            height: 150%;
+            top: -25%;
+            left: -25%;
+            background-image: radial-gradient(circle, #999 2px, transparent 2px);
+            background-size: 30px 30px;
+            background-position: 0 0;
+            transform-origin: center center;
+            transform-style: preserve-3d;
+        }
+
+        .app-container {
+            display: flex;
+            height: 100vh;
+            position: relative;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            background: #e0e0e0;
+            border-right: 1px solid #ccc;
+            z-index: 100;
+        }
+
+        .sidebar-content {
+            padding: 20px;
+            width: 200px;
+        }
+
+        .nav-item {
+            padding: 12px 16px;
+            margin: 8px 0;
+            background: #f0f0f0;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-item:hover {
+            background: #e8e8e8;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 40px;
+        }
+
+        .whiteboard-toggle {
+            position: absolute;
+            top: 40px;
+            right: 40px;
+            padding: 12px 24px;
+            background: white;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: all 0.3s;
+            user-select: none;
+        }
+
+        .whiteboard-toggle.active {
+            background: #333;
+            color: white;
+            border-color: #333;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .whiteboard-toggle.inactive {
+            color: #999;
+            opacity: 0.7;
+        }
+
+        .whiteboard-toggle:hover {
+            opacity: 1;
+        }
+
+        .cards-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            gap: 20px;
+        }
+
+        .card {
+            width: 150px;
+            height: 200px;
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 14px;
+        }
+
+        .ai-orb {
+            width: 200px;
+            height: 200px;
+            background: #c0c0c0;
+            border-radius: 50%;
+            margin-bottom: 80px;
+        }
+
+        .input-container {
+            position: absolute;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .chat-input-wrapper {
+            width: 100%;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 24px;
+            padding: 16px 24px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .chat-input {
+            width: 100%;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            background: transparent;
+            color: #333;
+        }
+
+        .chat-input::placeholder {
+            color: #999;
+        }
+
+        .chat-expanded {
+            position: fixed;
+            inset: 40px;
+            background: white;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            z-index: 200;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .voice-input {
+            width: 100%;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 24px;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .voice-button {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #f0f0f0;
+            border: 1px solid #ddd;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .voice-button:hover {
+            background: #e8e8e8;
+        }
+
+        .voice-waveform {
+            flex: 1;
+            height: 40px;
+            background: #f8f8f8;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .waveform-bar {
+            width: 3px;
+            height: 20px;
+            background: #ccc;
+            border-radius: 2px;
+        }
+
+        .toggle-button {
+            margin-top: 16px;
+            padding: 8px 16px;
+            background: transparent;
+            border: none;
+            color: #666;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toggle-button:hover {
+            color: #333;
+        }
+
+        .expand-button {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            opacity: 0.5;
+            transition: opacity 0.2s;
+        }
+
+        .expand-button:hover {
+            opacity: 1;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 32px;
+            height: 32px;
+            background: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: #666;
+        }
+
+        .close-button:hover {
+            background: #e8e8e8;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useRef } = React;
+        const { motion, AnimatePresence } = Motion;
+
+        function App() {
+            const [sidebarHovered, setSidebarHovered] = useState(false);
+            const [inputMode, setInputMode] = useState('text'); // 'text' or 'voice'
+            const [chatExpanded, setChatExpanded] = useState(false);
+            const [whiteboardMode, setWhiteboardMode] = useState(false);
+
+            const toggleInputMode = () => {
+                setInputMode(prev => prev === 'text' ? 'voice' : 'text');
+            };
+
+            // Dot Grid Background Component
+            const DotGridBackground = ({ isWhiteboardMode }) => {
+                return (
+                    <div className="dot-grid-background">
+                        <motion.div 
+                            className="dot-grid-surface"
+                            animate={{
+                                rotateX: isWhiteboardMode ? 65 : 0,
+                                rotateZ: isWhiteboardMode ? 5 : 0,
+                                translateZ: isWhiteboardMode ? -200 : 0,
+                                translateY: isWhiteboardMode ? 100 : 0,
+                                opacity: isWhiteboardMode ? 0.6 : 0.8
+                            }}
+                            transition={{ 
+                                duration: 0.8, 
+                                ease: "easeInOut" 
+                            }}
+                        />
+                    </div>
+                );
+            };
+
+            return (
+                <div className="app-container">
+                    {/* Dot Grid Background */}
+                    <DotGridBackground isWhiteboardMode={whiteboardMode} />
+                    
+                    {/* Sidebar */}
+                    <motion.div 
+                        className="sidebar"
+                        initial={{ x: -200 }}
+                        animate={{ x: sidebarHovered ? 0 : -200 }}
+                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                        onMouseEnter={() => setSidebarHovered(true)}
+                        onMouseLeave={() => setSidebarHovered(false)}
+                    >
+                        <div className="sidebar-content">
+                            <div className="nav-item">Sessions</div>
+                            <div className="nav-item">Journey</div>
+                            <div className="nav-item">Explore</div>
+                            <div className="nav-item">Schedule</div>
+                            <div className="nav-item" style={{marginTop: 'auto'}}>Jon</div>
+                        </div>
+                    </motion.div>
+
+                    {/* Hover area for sidebar */}
+                    <div 
+                        style={{
+                            position: 'fixed',
+                            left: 0,
+                            top: 0,
+                            width: '40px',
+                            height: '100vh',
+                            zIndex: 99
+                        }}
+                        onMouseEnter={() => setSidebarHovered(true)}
+                    />
+
+                    {/* Main Content */}
+                    <div className="main-content">
+                        {/* Whiteboard Mode Toggle */}
+                        <motion.div
+                            className={`whiteboard-toggle ${whiteboardMode ? 'active' : 'inactive'}`}
+                            onClick={() => setWhiteboardMode(!whiteboardMode)}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            animate={{
+                                opacity: whiteboardMode ? 1 : 0.7
+                            }}
+                        >
+                            Whiteboard Mode
+                        </motion.div>
+
+                        {/* AI Orb - fades out in whiteboard mode */}
+                        <AnimatePresence>
+                            {!whiteboardMode && (
+                                <motion.div 
+                                    className="ai-orb"
+                                    initial={{ opacity: 0, scale: 0.8 }}
+                                    animate={{ 
+                                        opacity: 1,
+                                        scale: 1,
+                                        y: [0, -10, 0],
+                                    }}
+                                    exit={{ opacity: 0, scale: 0.8 }}
+                                    transition={{
+                                        opacity: { duration: 0.3 },
+                                        scale: { duration: 0.3 },
+                                        y: {
+                                            duration: 3,
+                                            repeat: Infinity,
+                                            ease: "easeInOut"
+                                        }
+                                    }}
+                                />
+                            )}
+                        </AnimatePresence>
+
+                        {/* Cards - fade in during whiteboard mode */}
+                        <AnimatePresence>
+                            {whiteboardMode && (
+                                <motion.div 
+                                    className="cards-container"
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    exit={{ opacity: 0 }}
+                                    transition={{ duration: 0.3 }}
+                                >
+                                    {[1, 2, 3].map((i) => (
+                                        <motion.div
+                                            key={i}
+                                            className="card"
+                                            initial={{ opacity: 0, y: 20 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            exit={{ opacity: 0, y: 20 }}
+                                            transition={{ delay: i * 0.1 }}
+                                            whileHover={{ y: -5 }}
+                                        >
+                                            Card {i}
+                                        </motion.div>
+                                    ))}
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+
+                        {/* Input Container */}
+                        {!chatExpanded && (
+                            <div className="input-container">
+                                <AnimatePresence mode="wait">
+                                    {inputMode === 'voice' && (
+                                        <motion.div
+                                            key="voice-input"
+                                            className="voice-input"
+                                            initial={{ opacity: 0, y: 20 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            exit={{ opacity: 0, y: -20 }}
+                                        >
+                                            <button className="voice-button">🎤</button>
+                                            <div className="voice-waveform">
+                                                {[...Array(12)].map((_, i) => (
+                                                    <motion.div
+                                                        key={i}
+                                                        className="waveform-bar"
+                                                        animate={{
+                                                            height: [20, Math.random() * 30 + 10, 20],
+                                                        }}
+                                                        transition={{
+                                                            duration: 1,
+                                                            repeat: Infinity,
+                                                            delay: i * 0.1,
+                                                        }}
+                                                    />
+                                                ))}
+                                            </div>
+                                            <button className="voice-button">⏸</button>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+
+                                {/* Toggle Button */}
+                                <motion.button 
+                                    className="toggle-button"
+                                    onClick={toggleInputMode}
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                >
+                                    <span>⊕</span>
+                                    {inputMode === 'text' ? 'Switch to Voice' : 'Switch to Keyboard'}
+                                </motion.button>
+                            </div>
+                        )}
+
+                        {/* Chat Component - Single transforming element */}
+                        {inputMode === 'text' && (
+                            <motion.div
+                                className={chatExpanded ? "chat-expanded" : "chat-input-wrapper"}
+                                layout
+                                transition={{ 
+                                    layout: { duration: 0.4, ease: "easeInOut" }
+                                }}
+                                style={{
+                                    position: chatExpanded ? 'fixed' : 'absolute',
+                                    bottom: chatExpanded ? '40px' : '60px',
+                                    left: chatExpanded ? '40px' : '50%',
+                                    right: chatExpanded ? '40px' : 'auto',
+                                    top: chatExpanded ? '40px' : 'auto',
+                                    transform: chatExpanded ? 'none' : 'translateX(-50%)',
+                                    width: chatExpanded ? 'auto' : '600px',
+                                    cursor: chatExpanded ? 'default' : 'pointer',
+                                    zIndex: chatExpanded ? 200 : 1,
+                                }}
+                                onClick={() => !chatExpanded && setChatExpanded(true)}
+                                whileHover={!chatExpanded ? { scale: 1.02 } : {}}
+                            >
+                                {chatExpanded && (
+                                    <button 
+                                        className="close-button"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setChatExpanded(false);
+                                        }}
+                                    >
+                                        ×
+                                    </button>
+                                )}
+                                {chatExpanded && (
+                                    <motion.div 
+                                        style={{flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999'}}
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        transition={{ delay: 0.2 }}
+                                    >
+                                        Chat Interface Area
+                                    </motion.div>
+                                )}
+                                <motion.div layout style={{position: 'relative', width: '100%'}}>
+                                    <input 
+                                        className="chat-input"
+                                        placeholder="I'm feeling like..."
+                                        autoFocus={chatExpanded}
+                                        onClick={(e) => !chatExpanded && e.stopPropagation()}
+                                    />
+                                    {!chatExpanded && <div className="expand-button">⤢</div>}
+                                </motion.div>
+                            </motion.div>
+                        )}
+                    </div>
+                </div>
+            );
+        }
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>
