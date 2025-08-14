@@ -40,11 +40,23 @@
             height: 150%;
             top: -25%;
             left: -25%;
-            background-image: radial-gradient(circle, #999 2px, transparent 2px);
+            background-image: radial-gradient(circle, #aaa 1.5px, transparent 1.5px);
             background-size: 30px 30px;
-            background-position: 0 0;
             transform-origin: center center;
             transform-style: preserve-3d;
+        }
+        
+        @keyframes scrollDots {
+            from {
+                background-position: 0 0;
+            }
+            to {
+                background-position: 0 30px;
+            }
+        }
+        
+        .dot-grid-surface.scrolling {
+            animation: scrollDots 2s linear infinite;
         }
 
         .app-container {
@@ -58,28 +70,106 @@
             left: 0;
             top: 0;
             height: 100vh;
-            background: #e0e0e0;
-            border-right: 1px solid #ccc;
+            background: #f8f8f8;
             z-index: 100;
+            width: 80px;
+            border-right: 1px solid #e0e0e0;
         }
 
         .sidebar-content {
-            padding: 20px;
-            width: 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100%;
+            padding: 20px 0;
+        }
+        
+        .profile-circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #c0c0c0;
+            margin-bottom: 20px;
+        }
+        
+        .add-button {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #666;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            margin-bottom: 40px;
+            transition: all 0.2s;
+        }
+        
+        .add-button:hover {
+            background: #555;
+            transform: scale(1.05);
+        }
+
+        .nav-items {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
         }
 
         .nav-item {
-            padding: 12px 16px;
-            margin: 8px 0;
-            background: #f0f0f0;
-            border: 1px solid #d0d0d0;
-            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
             cursor: pointer;
             transition: all 0.2s;
+            opacity: 0.7;
         }
-
+        
         .nav-item:hover {
-            background: #e8e8e8;
+            opacity: 1;
+        }
+        
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+            stroke: #666;
+            fill: none;
+            stroke-width: 2;
+        }
+        
+        .nav-label {
+            font-size: 11px;
+            color: #666;
+            text-align: center;
+        }
+        
+        .user-profile {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            margin-top: auto;
+        }
+        
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+        
+        .user-name {
+            font-size: 12px;
+            color: #666;
         }
 
         .main-content {
@@ -96,7 +186,7 @@
             position: absolute;
             top: 40px;
             right: 40px;
-            padding: 12px 24px;
+            padding: 16px 32px;
             background: white;
             border: 2px solid #ccc;
             border-radius: 4px;
@@ -106,6 +196,23 @@
             text-transform: uppercase;
             transition: all 0.3s;
             user-select: none;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .led-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ddd;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .led-indicator.active {
+            background: white;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.5);
         }
 
         .whiteboard-toggle.active {
@@ -130,12 +237,14 @@
             left: 50%;
             transform: translate(-50%, -50%);
             display: flex;
-            gap: 20px;
+            gap: 40px;
+            perspective: 1000px;
+            transform-style: preserve-3d;
         }
 
         .card {
-            width: 150px;
-            height: 200px;
+            width: 300px;
+            height: 400px;
             background: white;
             border: 2px solid #ddd;
             border-radius: 8px;
@@ -143,7 +252,8 @@
             align-items: center;
             justify-content: center;
             color: #999;
-            font-size: 14px;
+            font-size: 24px;
+            cursor: pointer;
         }
 
         .ai-orb {
@@ -302,6 +412,21 @@
         .close-button:hover {
             background: #e8e8e8;
         }
+        
+        .canvas-border {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 300;
+            border: 0 solid #666;
+            animation: growBorder 4s ease-out forwards;
+        }
+        
+        @keyframes growBorder {
+            to {
+                border-width: 4px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -326,17 +451,17 @@
                 return (
                     <div className="dot-grid-background">
                         <motion.div 
-                            className="dot-grid-surface"
+                            className={`dot-grid-surface ${isWhiteboardMode ? 'scrolling' : ''}`}
                             animate={{
                                 rotateX: isWhiteboardMode ? 65 : 0,
-                                rotateZ: isWhiteboardMode ? 5 : 0,
+                                rotateZ: 0,
                                 translateZ: isWhiteboardMode ? -200 : 0,
                                 translateY: isWhiteboardMode ? 100 : 0,
-                                opacity: isWhiteboardMode ? 0.6 : 0.8
+                                opacity: isWhiteboardMode ? 0.5 : 0.6
                             }}
                             transition={{ 
-                                duration: 0.8, 
-                                ease: "easeInOut" 
+                                duration: 1.2,
+                                ease: [0.43, 0.13, 0.23, 0.96]  // Custom cubic-bezier for smoother feel
                             }}
                         />
                     </div>
@@ -351,18 +476,49 @@
                     {/* Sidebar */}
                     <motion.div 
                         className="sidebar"
-                        initial={{ x: -200 }}
-                        animate={{ x: sidebarHovered ? 0 : -200 }}
+                        initial={{ x: -80 }}
+                        animate={{ x: sidebarHovered ? 0 : -80 }}
                         transition={{ type: "spring", stiffness: 300, damping: 30 }}
                         onMouseEnter={() => setSidebarHovered(true)}
                         onMouseLeave={() => setSidebarHovered(false)}
                     >
                         <div className="sidebar-content">
-                            <div className="nav-item">Sessions</div>
-                            <div className="nav-item">Journey</div>
-                            <div className="nav-item">Explore</div>
-                            <div className="nav-item">Schedule</div>
-                            <div className="nav-item" style={{marginTop: 'auto'}}>Jon</div>
+                            <div className="add-button">+</div>
+                            
+                            <div className="nav-items">
+                                <div className="nav-item">
+                                    <svg className="nav-icon" viewBox="0 0 24 24">
+                                        <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                                    </svg>
+                                    <span className="nav-label">Home</span>
+                                </div>
+                                
+                                <div className="nav-item">
+                                    <svg className="nav-icon" viewBox="0 0 24 24">
+                                        <path d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                                    </svg>
+                                    <span className="nav-label">Journey</span>
+                                </div>
+                                
+                                <div className="nav-item">
+                                    <svg className="nav-icon" viewBox="0 0 24 24">
+                                        <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                    <span className="nav-label">Explore</span>
+                                </div>
+                                
+                                <div className="nav-item">
+                                    <svg className="nav-icon" viewBox="0 0 24 24">
+                                        <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                    <span className="nav-label">Schedule</span>
+                                </div>
+                            </div>
+                            
+                            <div className="user-profile">
+                                <div className="user-avatar">👤</div>
+                                <span className="user-name">Jon</span>
+                            </div>
                         </div>
                     </motion.div>
 
@@ -391,7 +547,8 @@
                                 opacity: whiteboardMode ? 1 : 0.7
                             }}
                         >
-                            Whiteboard Mode
+                            <div className={`led-indicator ${whiteboardMode ? 'active' : ''}`} />
+                            Canvas Mode
                         </motion.div>
 
                         {/* AI Orb - fades out in whiteboard mode */}
@@ -427,22 +584,94 @@
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
                                     exit={{ opacity: 0 }}
-                                    transition={{ duration: 0.3 }}
+                                    transition={{ duration: 0.3, delay: 0.4 }}
                                 >
                                     {[1, 2, 3].map((i) => (
                                         <motion.div
                                             key={i}
                                             className="card"
-                                            initial={{ opacity: 0, y: 20 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            exit={{ opacity: 0, y: 20 }}
-                                            transition={{ delay: i * 0.1 }}
-                                            whileHover={{ y: -5 }}
+                                            initial={{ 
+                                                opacity: 0, 
+                                                z: -600,
+                                                scale: 0.5,
+                                                rotateY: -30 + (i * 20)
+                                            }}
+                                            animate={{ 
+                                                opacity: 1, 
+                                                z: 0,
+                                                scale: 1,
+                                                rotateY: 0
+                                            }}
+                                            exit={{ 
+                                                opacity: 0, 
+                                                z: -200,
+                                                scale: 0.8
+                                            }}
+                                            transition={{ 
+                                                opacity: { 
+                                                    delay: 0.4 + (i * 0.15),
+                                                    duration: 0.6
+                                                },
+                                                z: { 
+                                                    delay: 0.4 + (i * 0.15),
+                                                    duration: 0.8,
+                                                    ease: [0.43, 0.13, 0.23, 0.96]
+                                                },
+                                                scale: {
+                                                    delay: 0.4 + (i * 0.15),
+                                                    duration: 0.8,
+                                                    ease: [0.43, 0.13, 0.23, 0.96]
+                                                },
+                                                rotateY: {
+                                                    delay: 0.4 + (i * 0.15),
+                                                    duration: 0.8,
+                                                    ease: [0.43, 0.13, 0.23, 0.96]
+                                                }
+                                            }}
+                                            whileHover={{ 
+                                                y: -5,
+                                                scale: 1.05,
+                                                transition: { duration: 0.2 }
+                                            }}
                                         >
-                                            Card {i}
+                                            <motion.div
+                                                animate={{
+                                                    rotateY: [0, 10, -10, 0],
+                                                    rotateX: [0, -5, 5, 0]
+                                                }}
+                                                transition={{
+                                                    rotateY: {
+                                                        delay: 1.5 + (i * 0.3),
+                                                        duration: 5 + i * 0.5,
+                                                        repeat: Infinity,
+                                                        ease: "easeInOut"
+                                                    },
+                                                    rotateX: {
+                                                        delay: 1.5 + (i * 0.3),
+                                                        duration: 5 + i * 0.5,
+                                                        repeat: Infinity,
+                                                        ease: "easeInOut"
+                                                    }
+                                                }}
+                                            >
+                                                Card {i}
+                                            </motion.div>
                                         </motion.div>
                                     ))}
                                 </motion.div>
+                            )}
+                        </AnimatePresence>
+
+                        {/* Canvas Border */}
+                        <AnimatePresence>
+                            {whiteboardMode && (
+                                <motion.div 
+                                    className="canvas-border"
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    exit={{ opacity: 0 }}
+                                    transition={{ duration: 0.3 }}
+                                />
                             )}
                         </AnimatePresence>
 
