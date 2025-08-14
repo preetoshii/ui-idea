@@ -30,8 +30,6 @@
             width: 100%;
             height: 100%;
             z-index: -1;
-            perspective: 800px;
-            transform-style: preserve-3d;
         }
 
         .dot-grid-surface {
@@ -43,7 +41,6 @@
             background-image: radial-gradient(circle, #aaa 1.5px, transparent 1.5px);
             background-size: 30px 30px;
             transform-origin: center center;
-            transform-style: preserve-3d;
         }
         
         @keyframes scrollDots {
@@ -449,12 +446,20 @@
             // Dot Grid Background Component
             const DotGridBackground = ({ isWhiteboardMode }) => {
                 return (
-                    <div className="dot-grid-background">
+                    <motion.div 
+                        className="dot-grid-background"
+                        style={{ 
+                            perspective: 800,
+                            transformStyle: "preserve-3d"
+                        }}
+                    >
                         <motion.div 
                             className={`dot-grid-surface ${isWhiteboardMode ? 'scrolling' : ''}`}
+                            style={{
+                                transformStyle: "preserve-3d"
+                            }}
                             animate={{
                                 rotateX: isWhiteboardMode ? 65 : 0,
-                                rotateZ: 0,
                                 translateZ: isWhiteboardMode ? -200 : 0,
                                 translateY: isWhiteboardMode ? 100 : 0,
                                 opacity: isWhiteboardMode ? 0.5 : 0.6
@@ -464,7 +469,7 @@
                                 ease: [0.43, 0.13, 0.23, 0.96]  // Custom cubic-bezier for smoother feel
                             }}
                         />
-                    </div>
+                    </motion.div>
                 );
             };
 
