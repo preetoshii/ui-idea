@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import AIMessage from './AIMessage'
 import UserMessage from './UserMessage'
+import FocusOverlay from './FocusOverlay'
 import './MessageThread.css'
 
 const MessageThread = ({ messages, isVisible, singleDisplayMode }) => {
@@ -9,6 +10,14 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode }) => {
   const [hasInitialized, setHasInitialized] = useState(false)
   const [focusMode, setFocusMode] = useState(false)
   const messageThreadRef = useRef(null)
+  const previousMessageCount = useRef(messages.length)
+  
+  // Disable focus mode when entering single display mode
+  useEffect(() => {
+    if (singleDisplayMode) {
+      setFocusMode(false)
+    }
+  }, [singleDisplayMode])
   
   useEffect(() => {
     if (isVisible && !hasInitialized) {
@@ -43,7 +52,11 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode }) => {
   }
 
   useEffect(() => {
-    if (messages.length > 0) {
+    // Only process if this is a new message (not initial load)
+    const isNewMessage = messages.length > previousMessageCount.current
+    previousMessageCount.current = messages.length
+    
+    if (messages.length > 0 && isNewMessage) {
       const lastMessage = messages[messages.length - 1]
       const secondToLastMessage = messages[messages.length - 2]
       
@@ -85,18 +98,12 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode }) => {
       }
     }
     
-    const handleClick = () => {
-      setFocusMode(false)
-    }
-    
-    // Add listeners to the document to catch all events
+    // Add listener to the document to catch all wheel events
     // Use capture phase for wheel to get it before any other handler
     document.addEventListener('wheel', handleWheel, { capture: true, passive: false })
-    document.addEventListener('click', handleClick)
     
     return () => {
       document.removeEventListener('wheel', handleWheel, { capture: true })
-      document.removeEventListener('click', handleClick)
     }
   }, [focusMode])
   
@@ -133,6 +140,7 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode }) => {
   const latestAIMessage = messages.filter(m => m.type === 'ai').slice(-1)[0]
 
   return (
+    <>
     <AnimatePresence>
       {isVisible && (
         <motion.div 
@@ -168,17 +176,15 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode }) => {
             
             if (!shouldShow) return null
             
-            // In focus mode, determine if this message is part of the latest exchange
-            const lastUserIndex = messages.findLastIndex(m => m.type === 'user')
-            const isInLatestExchange = index >= lastUserIndex
-            const shouldHide = focusMode && !isInLatestExchange
+            // In focus mode, hide all messages (they'll show in the overlay)
+            const shouldHide = focusMode
             
             
             return (
               <motion.div 
                 key={message.id} 
                 data-message-id={message.id}
-                className={`message-wrapper in-view ${isLastInPair ? 'last-in-pair' : ''} ${focusMode && isInLatestExchange ? 'focus-mode' : ''}`}
+                className={`message-wrapper in-view ${isLastInPair ? 'last-in-pair' : ''}`}
                 animate={{
                   y: shouldHide ? '-150%' : 0,
                   opacity: shouldHide ? 0 : 1,
@@ -203,6 +209,8 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode }) => {
         </motion.div>
       )}
     </AnimatePresence>
+    <FocusOverlay messages={messages} focusMode={focusMode} />
+  </>
   )
 }
 

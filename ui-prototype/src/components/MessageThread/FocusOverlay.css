@@ -1,0 +1,39 @@
+.focus-overlay {
+  position: fixed;
+  top: -10vh;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  pointer-events: none;
+}
+
+.focus-content {
+  width: 900px;
+  max-width: 90vw;
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+}
+
+.focus-message-wrapper .message-text {
+  font-size: 20px;
+  line-height: 2;
+}
+
+.focus-message-wrapper .user-bubble {
+  padding: 48px 56px;
+}
+
+.focus-message-wrapper .ai-bubble {
+  padding: 12px 0;
+}
+
+.focus-message-wrapper .ai-message-content,
+.focus-message-wrapper .user-message-content {
+  max-width: 70%;
+}
