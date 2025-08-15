@@ -23,7 +23,7 @@ const NewChatInput = React.memo(({ onSendMessage, onExpandedChange }) => {
     setTimeout(() => {
       setShouldPop(false)
       setShouldAnimateToggle(false)
-    }, 2000)
+    }, 800)
     // Clear input when switching to voice mode
     if (isExpanded) {
       setInputValue('')
@@ -162,10 +162,10 @@ const NewChatInput = React.memo(({ onSendMessage, onExpandedChange }) => {
                 }}
                 whileHover={{ scale: 1.25 }}
                 transition={{ 
-                  y: { duration: shouldAnimateToggle ? 0.3 : 0, delay: shouldAnimateToggle && !isExpanded ? 1.0 : 0 },
+                  y: { duration: shouldAnimateToggle ? 0.3 : 0, delay: shouldAnimateToggle && !isExpanded ? 0.3 : 0 },
                   opacity: { 
-                    duration: shouldAnimateToggle ? (isExpanded ? 0.3 : 1.0) : 0.1,
-                    delay: shouldAnimateToggle && !isExpanded ? 1.0 : 0
+                    duration: shouldAnimateToggle ? (isExpanded ? 0.3 : 0.5) : 0.1,
+                    delay: shouldAnimateToggle && !isExpanded ? 0.3 : 0
                   },
                   scale: { duration: 0.1 }
                 }}
@@ -186,10 +186,10 @@ const NewChatInput = React.memo(({ onSendMessage, onExpandedChange }) => {
                 }}
                 whileHover={{ scale: 1.25 }}
                 transition={{ 
-                  y: { duration: shouldAnimateToggle ? 0.3 : 0, delay: shouldAnimateToggle && isExpanded ? 1.0 : 0 },
+                  y: { duration: shouldAnimateToggle ? 0.3 : 0, delay: shouldAnimateToggle && isExpanded ? 0.3 : 0 },
                   opacity: { 
-                    duration: shouldAnimateToggle ? (isExpanded ? 1.0 : 0.3) : 0.1,
-                    delay: shouldAnimateToggle && isExpanded ? 1.0 : 0
+                    duration: shouldAnimateToggle ? (isExpanded ? 0.5 : 0.3) : 0.1,
+                    delay: shouldAnimateToggle && isExpanded ? 0.3 : 0
                   },
                   scale: { duration: 0.1 }
                 }}
