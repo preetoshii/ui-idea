@@ -167,6 +167,12 @@
   display: flex;
   align-items: flex-start;
   max-width: 70%; /* Reduced to maintain proportions with wider container */
+  transition: margin-left 0.3s ease-out;
+}
+
+/* Push AI message right when in focused pair with focus active */
+.message-pair.latest-pair.focus-active .ai-message-content {
+  margin-left: 120px; /* Make room for AI orb */
 }
 
 

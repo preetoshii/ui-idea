@@ -370,7 +370,7 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode, onFocusPosition
               return (
                 <motion.div
                   key={`pair-${pair.user.id}-${pair.ai.id}`}
-                  className={`message-pair ${isLatestPair ? 'latest-pair' : ''}`}
+                  className={`message-pair ${isLatestPair ? 'latest-pair' : ''} ${focusModeActive ? 'focus-active' : ''}`}
                   data-pair-index={pairIndex}
                   animate={{
                     scale,
