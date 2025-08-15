@@ -21,8 +21,10 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode }) => {
   const scrollToBottom = () => {
     const scrollWrapper = messagesEndRef.current?.parentElement?.parentElement
     if (scrollWrapper) {
+      // Ensure we scroll to the very bottom
+      const targetScroll = scrollWrapper.scrollHeight - scrollWrapper.clientHeight
       scrollWrapper.scrollTo({
-        top: scrollWrapper.scrollHeight,
+        top: targetScroll,
         behavior: 'smooth'
       })
     }
@@ -49,28 +51,11 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode }) => {
     const isNewMessage = messages.length > previousMessageCount.current
     previousMessageCount.current = messages.length
     
-    if (messages.length > 0) {
-      const lastMessage = messages[messages.length - 1]
-      const secondToLastMessage = messages[messages.length - 2]
-      
-      // If the last message is from the user, scroll to show it at the top
-      if (lastMessage.type === 'user') {
-        setTimeout(() => {
-          scrollToMessage(lastMessage.id)
-        }, 100)
-      } 
-      // If last message is AI and previous is user, scroll to show the user message at top
-      else if (lastMessage.type === 'ai' && secondToLastMessage?.type === 'user') {
-        setTimeout(() => {
-          scrollToMessage(secondToLastMessage.id)
-        }, 100)
-      } 
-      // Otherwise just scroll to bottom
-      else {
-        setTimeout(() => {
-          scrollToBottom()
-        }, 100)
-      }
+    if (isNewMessage && messages.length > 0) {
+      // Always scroll to bottom immediately for new messages
+      setTimeout(() => {
+        scrollToBottom()
+      }, 50) // Minimal delay just to ensure DOM is updated
     }
   }, [messages, singleDisplayMode])
   
