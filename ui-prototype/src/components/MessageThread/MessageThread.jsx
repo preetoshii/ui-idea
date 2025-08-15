@@ -167,8 +167,15 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode, onFocusPosition
     const scrollWrapper = messageThreadRef.current?.parentElement
     if (!scrollWrapper) return
     
+    // Track scroll direction
+    let lastScrollTop = scrollWrapper.scrollTop
+    
     // Function to find the most centered pair
     const findCenteredPair = () => {
+      const currentScrollTop = scrollWrapper.scrollTop
+      const isScrollingUp = currentScrollTop < lastScrollTop
+      lastScrollTop = currentScrollTop
+      
       const messagePairs = scrollWrapper.querySelectorAll('.message-pair')
       let bestIndex = null
       let bestDistance = Infinity
@@ -180,7 +187,16 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode, onFocusPosition
         // Calculate relative position
         const pairCenter = rect.top + rect.height / 2
         const viewportCenter = scrollRect.top + scrollRect.height / 2
-        const distance = Math.abs(pairCenter - viewportCenter)
+        let distance = Math.abs(pairCenter - viewportCenter)
+        
+        // Bias distance based on scroll direction
+        if (isScrollingUp && pairCenter < viewportCenter) {
+          // When scrolling up, favor pairs above center
+          distance *= 0.8 // Make upper pairs more attractive
+        } else if (!isScrollingUp && pairCenter > viewportCenter) {
+          // When scrolling down, slightly penalize pairs below center
+          distance *= 1.1 // Make lower pairs less attractive
+        }
         
         // Check if pair is reasonably visible
         const visibleTop = Math.max(0, rect.top - scrollRect.top)
@@ -188,7 +204,10 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode, onFocusPosition
         const visibleHeight = visibleBottom - visibleTop
         const visibilityRatio = visibleHeight / rect.height
         
-        if (visibilityRatio > 0.2 && distance < bestDistance) {
+        // Use different thresholds based on scroll direction
+        const minVisibility = isScrollingUp ? 0.15 : 0.25
+        
+        if (visibilityRatio > minVisibility && distance < bestDistance) {
           bestDistance = distance
           bestIndex = index
         }
