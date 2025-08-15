@@ -67,7 +67,10 @@ const AIOrb = ({ chatExpanded, audioLevels = { level: 0, lowFreq: 0, highFreq: 0
       }}
       exit={{ opacity: 0 }}
       transition={{
-        opacity: { duration: 0.3 },
+        opacity: { 
+          duration: 0.6,
+          delay: 0.4 // Add delay for fade-in
+        },
         top: {
           type: "spring",
           stiffness: focusPosition ? 60 : 100, // Smoother when moving to focus
