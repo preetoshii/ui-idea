@@ -4,7 +4,7 @@ import AIMessage from './AIMessage'
 import UserMessage from './UserMessage'
 import './MessageThread.css'
 
-const MessageThread = ({ messages, isVisible, singleDisplayMode, onFocusPositionChange, waitingForAI, onTransitioningInChange }) => {
+const MessageThread = ({ messages, isVisible, onFocusPositionChange, waitingForAI, onTransitioningInChange }) => {
   const messagesEndRef = useRef(null)
   const [hasInitialized, setHasInitialized] = useState(false)
   const messageThreadRef = useRef(null)
@@ -130,7 +130,7 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode, onFocusPosition
         scrollToLatestPair()
       }, 50) // Minimal delay just to ensure DOM is updated
     }
-  }, [messages, singleDisplayMode])
+  }, [messages])
   
   
   // Set up intersection observer for fade effect
@@ -352,7 +352,7 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode, onFocusPosition
     <AnimatePresence>
       {isVisible && (
         <motion.div 
-          className={`message-thread-container ${singleDisplayMode ? 'single-display' : ''}`}
+          className="message-thread-container"
           initial={hasInitialized ? false : { y: '150vh', x: '-50%', opacity: 0 }}
           animate={{ 
             y: 0, 
@@ -475,19 +475,7 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode, onFocusPosition
               }
             }
             
-            if (singleDisplayMode) {
-              // In single display mode, only show the latest AI message
-              const lastPair = messagePairs[messagePairs.length - 1]
-              if (!lastPair) return null
-              
-              return (
-                <div className="message-wrapper in-view">
-                  <AIMessage message={lastPair.ai} />
-                </div>
-              )
-            }
-            
-            // Regular mode: show all pairs
+            // Show all pairs
             return messagePairs.map((pair, pairIndex) => {
               const isLatestPair = pairIndex === messagePairs.length - 1
               const isCurrentPair = pairIndex === currentPairIndex

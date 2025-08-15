@@ -43,29 +43,6 @@
   display: none;
 }
 
-/* Single display mode adjustments */
-.message-thread-container.single-display {
-  height: auto;
-  max-height: 200px;
-  top: calc(50vh - 150px) !important;
-  transition: top 1s ease-out;
-}
-
-.message-thread-container.single-display .message-thread {
-  padding-bottom: 20px;
-  gap: 0;
-  overflow-y: hidden;
-}
-
-.message-thread-container.single-display .message-thread-scroll-wrapper {
-  mask-image: none;
-  -webkit-mask-image: none;
-}
-
-/* Hide dividers in single display mode */
-.message-thread-container.single-display .message-wrapper.last-in-pair::after {
-  display: none;
-}
 
 .message-thread {
   padding: 20px 100px; /* Add horizontal padding for scaling space */

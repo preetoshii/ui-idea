@@ -149,7 +149,6 @@ function App() {
     }
   ])
   const [chatExpanded, setChatExpanded] = useState(false)
-  const [singleDisplayMode, setSingleDisplayMode] = useState(false)
   const [speechEnabled, setSpeechEnabled] = useState(true)
   const [audioLevels, setAudioLevels] = useState({ level: 0, lowFreq: 0, highFreq: 0 })
   const [focusPosition, setFocusPosition] = useState(null)
@@ -187,16 +186,14 @@ function App() {
   const sendMessage = (content) => {
     if (!content.trim()) return
     
-    if (!singleDisplayMode) {
-      // Normal mode: Add user message
-      const userMessage = {
-        id: Date.now().toString(),
-        type: 'user',
-        content,
-        timestamp: new Date()
-      }
-      setMessages(prev => [...prev, userMessage])
+    // Add user message
+    const userMessage = {
+      id: Date.now().toString(),
+      type: 'user',
+      content,
+      timestamp: new Date()
     }
+    setMessages(prev => [...prev, userMessage])
     
     // Set waiting state
     setWaitingForAI(true)
@@ -229,18 +226,7 @@ function App() {
         isStreaming: true
       }
       
-      if (singleDisplayMode) {
-        // Single display mode: Add user message temporarily for processing
-        const userMessage = {
-          id: Date.now().toString(),
-          type: 'user',
-          content,
-          timestamp: new Date()
-        }
-        setMessages(prev => [...prev, userMessage, aiMessage])
-      } else {
-        setMessages(prev => [...prev, aiMessage])
-      }
+      setMessages(prev => [...prev, aiMessage])
       
       // Speak the AI response if enabled
       if (speechEnabled) {
@@ -276,7 +262,6 @@ function App() {
           whiteboardMode={whiteboardMode}
           setWhiteboardMode={(mode) => {
             setWhiteboardMode(mode)
-            setSingleDisplayMode(mode) // Activate single display when entering canvas mode
             if (mode) {
               speechService.stop() // Stop speech when entering canvas mode
             }
@@ -298,7 +283,6 @@ function App() {
         <MessageThread 
           messages={messages} 
           isVisible={chatExpanded}
-          singleDisplayMode={singleDisplayMode}
           onFocusPositionChange={setFocusPosition}
           waitingForAI={waitingForAI}
           onTransitioningInChange={setIsTransitioningIn}
