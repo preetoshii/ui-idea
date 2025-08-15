@@ -156,12 +156,10 @@
             width: 50px;
             height: 50px;
             border-radius: 50%;
-            background: #999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 20px;
+            background-image: url('https://randomuser.me/api/portraits/men/32.jpg');
+            background-size: cover;
+            background-position: center;
+            filter: grayscale(100%);
         }
         
         .user-name {
@@ -410,6 +408,96 @@
             background: #e8e8e8;
         }
         
+        /* New Chat Input Styles */
+        .new-chat-input {
+            position: fixed;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 25px;
+            padding: 24px 20px;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            width: 600px;
+        }
+        
+        /* voice-controls-pill removed - no longer using a pill container */
+        
+        .voice-control-button {
+            width: 36px;
+            height: 36px;
+            background: #f0f0f0;
+            border: none;
+            border-radius: 50%;
+            color: #333;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: all 0.2s;
+        }
+        
+        .voice-control-button:hover {
+            background: #e5e5e5;
+        }
+        
+        .voice-waveform-mini {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            height: 36px;
+        }
+        
+        .waveform-bar-mini {
+            width: 3px;
+            background: #999;
+            border-radius: 1.5px;
+            opacity: 0.8;
+        }
+        
+        .mode-toggle-container {
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 60px;
+            overflow: hidden;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .mode-toggle-track {
+            position: relative;
+            height: 24px;
+            width: 24px;
+        }
+        
+        .mode-toggle-icon {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .mode-toggle-icon svg {
+            width: 24px;
+            height: 24px;
+            stroke: #7c3aed;
+            stroke-width: 2;
+            fill: none;
+        }
+        
         .canvas-border {
             position: fixed;
             inset: 0;
@@ -466,7 +554,7 @@
                             ease: [0.43, 0.13, 0.23, 0.96]
                         }
                     });
-                }, [isWhiteboardMode]);
+                }, [isWhiteboardMode, controls]);
                 
                 return (
                     <div className="dot-grid-background">
@@ -477,6 +565,158 @@
                     </div>
                 );
             };
+
+            // New Chat Input Component
+            const NewChatInput = React.memo(() => {
+                const [isExpanded, setIsExpanded] = useState(false);
+                const [shouldPop, setShouldPop] = useState(false);
+                const inputRef = useRef(null);
+                
+                useEffect(() => {
+                    if (isExpanded && inputRef.current) {
+                        inputRef.current.focus();
+                    }
+                }, [isExpanded]);
+                
+                const handleToggle = () => {
+                    setIsExpanded(!isExpanded);
+                    setShouldPop(true);
+                    setTimeout(() => setShouldPop(false), 300);
+                };
+                
+                return (
+                    <motion.div 
+                        className="new-chat-input"
+                        animate={{
+                            height: isExpanded ? 60 : 72,
+                            scale: shouldPop ? [1, 1.05, 1] : 1,
+                            x: '-50%'
+                        }}
+                        transition={{ 
+                            height: { duration: 0.2 },
+                            scale: { duration: 0.3, times: [0, 0.5, 1] }
+                        }}
+                    >
+                        <motion.div 
+                            style={{ display: 'flex', gap: '8px', position: 'absolute', left: '20px' }}
+                            animate={{ 
+                                opacity: isExpanded ? 0 : 1, 
+                                scale: isExpanded ? 0.8 : 1,
+                                pointerEvents: isExpanded ? 'none' : 'auto'
+                            }}
+                            transition={{ duration: 0.2 }}
+                        >
+                            <button className="voice-control-button">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                                    <rect x="6" y="5" width="4" height="14"/>
+                                    <rect x="14" y="5" width="4" height="14"/>
+                                </svg>
+                            </button>
+                            
+                            <button className="voice-control-button">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                                    <path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3z"/>
+                                    <path d="M17 11a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.93V21h2v-3.07A7 7 0 0 0 19 11h-2z"/>
+                                </svg>
+                            </button>
+                        </motion.div>
+                        
+                        <motion.div 
+                            className="voice-waveform-mini"
+                            animate={{ 
+                                opacity: isExpanded ? 0 : 1,
+                                pointerEvents: isExpanded ? 'none' : 'auto'
+                            }}
+                            transition={{ duration: 0.2 }}
+                        >
+                            {[...Array(6)].map((_, i) => (
+                                <motion.div
+                                    key={i}
+                                    className="waveform-bar-mini"
+                                    animate={{
+                                        height: isExpanded ? 10 : [10, Math.random() * 26 + 10, 10],
+                                    }}
+                                    transition={{
+                                        duration: 1.5,
+                                        repeat: isExpanded ? 0 : Infinity,
+                                        delay: i * 0.1,
+                                    }}
+                                />
+                            ))}
+                        </motion.div>
+                        
+                        <motion.input
+                            ref={inputRef}
+                            className="new-chat-input-field"
+                            placeholder="Type something..."
+                            animate={{ 
+                                opacity: isExpanded ? 1 : 0,
+                                pointerEvents: isExpanded ? 'auto' : 'none'
+                            }}
+                            transition={{ duration: 0.2, delay: isExpanded ? 0.1 : 0 }}
+                            style={{
+                                position: 'absolute',
+                                width: 'calc(100% - 87px)',
+                                border: 'none',
+                                outline: 'none',
+                                fontSize: '16px',
+                                color: '#333',
+                                background: 'transparent',
+                                left: '27px',
+                                right: '60px'
+                            }}
+                        />
+                        
+                        <motion.div 
+                            className="mode-toggle-container" 
+                            onClick={handleToggle}
+                            whileHover={{ opacity: 0.8 }}
+                            transition={{ duration: 0.2 }}
+                        >
+                            <div className="mode-toggle-track">
+                                <motion.div 
+                                    className="mode-toggle-icon"
+                                    animate={{
+                                        y: isExpanded ? 24 : 0,
+                                        opacity: isExpanded ? 0 : 1
+                                    }}
+                                    whileHover={{ scale: 1.25 }}
+                                    transition={{ 
+                                        y: { duration: 0.3, delay: isExpanded ? 0 : 1.0 },
+                                        opacity: { 
+                                            duration: isExpanded ? 0.3 : 1.0,
+                                            delay: isExpanded ? 0 : 1.0
+                                        }
+                                    }}
+                                >
+                                    <svg viewBox="0 0 24 24">
+                                        <path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                                    </svg>
+                                </motion.div>
+                                <motion.div 
+                                    className="mode-toggle-icon"
+                                    animate={{
+                                        y: isExpanded ? 0 : -24,
+                                        opacity: isExpanded ? 1 : 0
+                                    }}
+                                    whileHover={{ scale: 1.25 }}
+                                    transition={{ 
+                                        y: { duration: 0.3, delay: isExpanded ? 1.0 : 0 },
+                                        opacity: { 
+                                            duration: isExpanded ? 1.0 : 0.3,
+                                            delay: isExpanded ? 1.0 : 0
+                                        }
+                                    }}
+                                >
+                                    <svg viewBox="0 0 24 24">
+                                        <path d="M12 2v20M8 6v12M16 6v12M4 10v4M20 10v4" strokeLinecap="round" />
+                                    </svg>
+                                </motion.div>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                );
+            });
 
             return (
                 <div className="app-container">
@@ -526,8 +766,7 @@
                             </div>
                             
                             <div className="user-profile">
-                                <div className="user-avatar">👤</div>
-                                <span className="user-name">Jon</span>
+                                <div className="user-avatar"></div>
                             </div>
                         </div>
                     </motion.div>
@@ -574,8 +813,8 @@
                                     }}
                                     exit={{ opacity: 0, scale: 0.8 }}
                                     transition={{
-                                        opacity: { duration: 0.3 },
-                                        scale: { duration: 0.3 },
+                                        opacity: { duration: 0.3, delay: 0.6 },
+                                        scale: { duration: 0.3, delay: 0.6 },
                                         y: {
                                             duration: 3,
                                             repeat: Infinity,
@@ -587,14 +826,17 @@
                         </AnimatePresence>
 
                         {/* Cards - fade in during whiteboard mode */}
-                        <AnimatePresence>
+                        <AnimatePresence mode="wait">
                             {whiteboardMode && (
                                 <motion.div 
                                     className="cards-container"
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
                                     exit={{ opacity: 0 }}
-                                    transition={{ duration: 0.3, delay: 0.4 }}
+                                    transition={{ 
+                                        duration: 0.3, 
+                                        delay: whiteboardMode ? 0.4 : 0 
+                                    }}
                                 >
                                     {[1, 2, 3].map((i) => (
                                         <motion.div
@@ -613,9 +855,8 @@
                                                 rotateY: 0
                                             }}
                                             exit={{ 
-                                                opacity: 0, 
-                                                z: -200,
-                                                scale: 0.8
+                                                opacity: 0,
+                                                transition: { duration: 0.3, delay: 0 }
                                             }}
                                             transition={{ 
                                                 opacity: { 
@@ -685,107 +926,8 @@
                             )}
                         </AnimatePresence>
 
-                        {/* Input Container */}
-                        {!chatExpanded && (
-                            <div className="input-container">
-                                <AnimatePresence mode="wait">
-                                    {inputMode === 'voice' && (
-                                        <motion.div
-                                            key="voice-input"
-                                            className="voice-input"
-                                            initial={{ opacity: 0, y: 20 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            exit={{ opacity: 0, y: -20 }}
-                                        >
-                                            <button className="voice-button">🎤</button>
-                                            <div className="voice-waveform">
-                                                {[...Array(12)].map((_, i) => (
-                                                    <motion.div
-                                                        key={i}
-                                                        className="waveform-bar"
-                                                        animate={{
-                                                            height: [20, Math.random() * 30 + 10, 20],
-                                                        }}
-                                                        transition={{
-                                                            duration: 1,
-                                                            repeat: Infinity,
-                                                            delay: i * 0.1,
-                                                        }}
-                                                    />
-                                                ))}
-                                            </div>
-                                            <button className="voice-button">⏸</button>
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
-
-                                {/* Toggle Button */}
-                                <motion.button 
-                                    className="toggle-button"
-                                    onClick={toggleInputMode}
-                                    whileHover={{ scale: 1.05 }}
-                                    whileTap={{ scale: 0.95 }}
-                                >
-                                    <span>⊕</span>
-                                    {inputMode === 'text' ? 'Switch to Voice' : 'Switch to Keyboard'}
-                                </motion.button>
-                            </div>
-                        )}
-
-                        {/* Chat Component - Single transforming element */}
-                        {inputMode === 'text' && (
-                            <motion.div
-                                className={chatExpanded ? "chat-expanded" : "chat-input-wrapper"}
-                                layout
-                                transition={{ 
-                                    layout: { duration: 0.4, ease: "easeInOut" }
-                                }}
-                                style={{
-                                    position: chatExpanded ? 'fixed' : 'absolute',
-                                    bottom: chatExpanded ? '40px' : '60px',
-                                    left: chatExpanded ? '40px' : '50%',
-                                    right: chatExpanded ? '40px' : 'auto',
-                                    top: chatExpanded ? '40px' : 'auto',
-                                    transform: chatExpanded ? 'none' : 'translateX(-50%)',
-                                    width: chatExpanded ? 'auto' : '600px',
-                                    cursor: chatExpanded ? 'default' : 'pointer',
-                                    zIndex: chatExpanded ? 200 : 1,
-                                }}
-                                onClick={() => !chatExpanded && setChatExpanded(true)}
-                                whileHover={!chatExpanded ? { scale: 1.02 } : {}}
-                            >
-                                {chatExpanded && (
-                                    <button 
-                                        className="close-button"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            setChatExpanded(false);
-                                        }}
-                                    >
-                                        ×
-                                    </button>
-                                )}
-                                {chatExpanded && (
-                                    <motion.div 
-                                        style={{flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999'}}
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        transition={{ delay: 0.2 }}
-                                    >
-                                        Chat Interface Area
-                                    </motion.div>
-                                )}
-                                <motion.div layout style={{position: 'relative', width: '100%'}}>
-                                    <input 
-                                        className="chat-input"
-                                        placeholder="I'm feeling like..."
-                                        autoFocus={chatExpanded}
-                                        onClick={(e) => !chatExpanded && e.stopPropagation()}
-                                    />
-                                    {!chatExpanded && <div className="expand-button">⤢</div>}
-                                </motion.div>
-                            </motion.div>
-                        )}
+                        {/* New Chat Input */}
+                        <NewChatInput />
                     </div>
                 </div>
             );
