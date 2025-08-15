@@ -16,8 +16,8 @@ const AIOrb = ({ chatExpanded }) => {
       transition={{
         opacity: { duration: 0.3, delay: 0.6 },
         scale: { 
-          duration: chatExpanded ? 0.5 : 0.3, 
-          delay: chatExpanded ? 0 : 0.6,
+          duration: 0.5, 
+          delay: 0,
           ease: "easeOut"
         },
         y: chatExpanded ? {
