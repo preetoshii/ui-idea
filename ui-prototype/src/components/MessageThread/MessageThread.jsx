@@ -13,6 +13,7 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode, onFocusPosition
   const [dynamicPadding, setDynamicPadding] = useState(100)
   const [showDebug, setShowDebug] = useState(false)
   const [focusedAIPosition, setFocusedAIPosition] = useState(null)
+  const [expectingNewMessage, setExpectingNewMessage] = useState(false)
   
   
   useEffect(() => {
@@ -116,6 +117,15 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode, onFocusPosition
     previousMessageCount.current = messages.length
     
     if (isNewMessage && messages.length > 0) {
+      // Check if we're expecting an AI response (last message is from user)
+      const lastMessage = messages[messages.length - 1]
+      if (lastMessage.type === 'user') {
+        setExpectingNewMessage(true)
+      } else if (lastMessage.type === 'ai') {
+        // AI message arrived, stop expecting
+        setExpectingNewMessage(false)
+      }
+      
       // Calculate the index of the last pair
       const totalPairs = Math.floor(messages.length / 2)
       const lastPairIndex = totalPairs - 1
@@ -263,10 +273,12 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode, onFocusPosition
     const isInFocusMode = currentPairIndex === totalPairs - 1
     
     if (!isVisible || !isInFocusMode) {
-      // Not in focus mode, reset position
-      setFocusedAIPosition(null)
-      if (onFocusPositionChange) {
-        onFocusPositionChange(null)
+      // Not in focus mode, but keep position if expecting new message
+      if (!expectingNewMessage) {
+        setFocusedAIPosition(null)
+        if (onFocusPositionChange) {
+          onFocusPositionChange(null)
+        }
       }
       return
     }
@@ -317,7 +329,7 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode, onFocusPosition
         scrollWrapper.removeEventListener('scroll', handleScroll)
       }
     }
-  }, [currentPairIndex, messages, isVisible, onFocusPositionChange])
+  }, [currentPairIndex, messages, isVisible, onFocusPositionChange, expectingNewMessage])
 
   return (
     <>
