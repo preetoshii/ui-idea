@@ -114,23 +114,39 @@
   opacity: 1;
 }
 
+/* Always show messages in focus mode pairs */
+.message-pair.focus-mode .message-wrapper {
+  opacity: 1 !important;
+}
+
+/* Message pair styling */
+.message-pair {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.message-pair.focus-mode {
+  gap: 50px;
+}
+
 /* Focus mode styling */
-.message-wrapper.focus-mode .message-text {
+.message-pair.focus-mode .message-text {
   font-size: 20px;
   line-height: 2;
 }
 
-.message-wrapper.focus-mode .user-bubble {
+.message-pair.focus-mode .user-bubble {
   padding: 48px 56px;
 }
 
-.message-wrapper.focus-mode .ai-bubble {
+.message-pair.focus-mode .ai-bubble {
   padding: 12px 0;
 }
 
 /* Scale the content within, not the wrapper */
-.message-wrapper.focus-mode .ai-message-content,
-.message-wrapper.focus-mode .user-message-content {
+.message-pair.focus-mode .ai-message-content,
+.message-pair.focus-mode .user-message-content {
   max-width: 70%;
 }
 

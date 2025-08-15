@@ -1,8 +1,7 @@
-import { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import AIMessage from './AIMessage'
 import UserMessage from './UserMessage'
-import FocusOverlay from './FocusOverlay'
 import './MessageThread.css'
 
 const MessageThread = ({ messages, isVisible, singleDisplayMode }) => {
@@ -56,7 +55,7 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode }) => {
     const isNewMessage = messages.length > previousMessageCount.current
     previousMessageCount.current = messages.length
     
-    if (messages.length > 0 && isNewMessage) {
+    if (messages.length > 0) {
       const lastMessage = messages[messages.length - 1]
       const secondToLastMessage = messages[messages.length - 2]
       
@@ -169,49 +168,89 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode }) => {
         >
           <div className={`message-thread ${focusMode ? 'has-focus' : ''}`} ref={messageThreadRef}>
         <AnimatePresence>
-          {messages.map((message, index) => {
-            const isLastInPair = message.type === 'ai'
-            const isLatestAI = latestAIMessage && message.id === latestAIMessage.id
-            const shouldShow = !singleDisplayMode || isLatestAI
+          {(() => {
+            // Group messages into pairs
+            const messagePairs = []
+            for (let i = 0; i < messages.length; i++) {
+              if (messages[i].type === 'user' && messages[i + 1]?.type === 'ai') {
+                messagePairs.push({
+                  user: messages[i],
+                  ai: messages[i + 1],
+                  pairIndex: messagePairs.length
+                })
+                i++ // Skip the AI message since we already paired it
+              }
+            }
             
-            if (!shouldShow) return null
+            if (singleDisplayMode) {
+              // In single display mode, only show the latest AI message
+              const lastPair = messagePairs[messagePairs.length - 1]
+              if (!lastPair) return null
+              
+              return (
+                <div className="message-wrapper in-view">
+                  <AIMessage message={lastPair.ai} />
+                </div>
+              )
+            }
             
-            // In focus mode, hide all messages (they'll show in the overlay)
-            const shouldHide = focusMode
-            
-            
-            return (
-              <motion.div 
-                key={message.id} 
-                data-message-id={message.id}
-                className={`message-wrapper in-view ${isLastInPair ? 'last-in-pair' : ''}`}
-                animate={{
-                  y: shouldHide ? '-150%' : 0,
-                  opacity: shouldHide ? 0 : 1,
-                  scale: 1
-                }}
-                transition={{
-                  duration: 0.5,
-                  ease: [0.16, 1, 0.3, 1]
-                }}
-              >
-                {message.type === 'ai' ? (
-                  <AIMessage message={message} />
-                ) : (
-                  <UserMessage message={message} />
-                )}
-              </motion.div>
-            )
-          })}
+            // Regular mode: show all pairs
+            return messagePairs.map((pair, pairIndex) => {
+              const isLatestPair = pairIndex === messagePairs.length - 1
+              const shouldHide = focusMode && !isLatestPair
+              
+              // Debug
+              if (isLatestPair) {
+                console.log('Latest pair rendering:', { 
+                  focusMode, 
+                  isLatestPair, 
+                  pairIndex,
+                  shouldApplyTransform: focusMode && isLatestPair,
+                  transform: focusMode && isLatestPair ? 'translateY(-75%)' : 'none'
+                })
+              }
+              
+              return (
+                <motion.div
+                  key={`pair-${pair.user.id}-${pair.ai.id}`}
+                  className={`message-pair ${focusMode && isLatestPair ? 'focus-mode' : ''}`}
+                  animate={{
+                    y: shouldHide ? '-150%' : focusMode && isLatestPair ? '-75%' : 0,
+                    opacity: shouldHide ? 0 : 1
+                  }}
+                  transition={{
+                    duration: 0.5,
+                    ease: [0.16, 1, 0.3, 1]
+                  }}
+                  style={{
+                    position: focusMode && isLatestPair ? 'fixed' : 'relative',
+                    top: focusMode && isLatestPair ? '50%' : 'auto',
+                    left: focusMode && isLatestPair ? '0' : 'auto',
+                    right: focusMode && isLatestPair ? '0' : 'auto',
+                    margin: focusMode && isLatestPair ? '0 auto' : '0',
+                    zIndex: focusMode && isLatestPair ? 100 : 1,
+                    width: focusMode && isLatestPair ? '900px' : '100%',
+                    maxWidth: focusMode && isLatestPair ? '90vw' : '100%',
+                  }}
+                >
+                  <div className="message-wrapper in-view" data-message-id={pair.user.id}>
+                    <UserMessage message={pair.user} />
+                  </div>
+                  <div className="message-wrapper in-view last-in-pair" data-message-id={pair.ai.id}>
+                    <AIMessage message={pair.ai} />
+                  </div>
+                </motion.div>
+              )
+            })
+          })()}
         </AnimatePresence>
             <div ref={messagesEndRef} />
           </div>
         </motion.div>
       )}
     </AnimatePresence>
-    <FocusOverlay messages={messages} focusMode={focusMode} />
   </>
   )
 }
 
-export default MessageThread
+export default React.memo(MessageThread)
