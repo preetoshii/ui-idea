@@ -365,7 +365,7 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode, onFocusPosition
               const focusModeActive = currentPairIndex === messagePairs.length - 1
               
               const scale = isLatestPair && focusModeActive ? 1.15 : 1
-              const opacity = !isLatestPair && focusModeActive ? 0.3 : 1
+              const opacity = !isLatestPair && focusModeActive ? 0 : 1
               
               return (
                 <motion.div
