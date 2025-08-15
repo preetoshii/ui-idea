@@ -245,7 +245,7 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode, onFocusPosition
               console.log('Current pair updated to:', bestPair.index + 1)
             }
           }
-        }, 100) // Debounce updates by 100ms
+        }, 50) // Reduced debounce for less lag
       },
       {
         root: scrollWrapper,
@@ -367,24 +367,75 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode, onFocusPosition
             <div className="message-thread" ref={messageThreadRef} style={{ paddingBottom: `${dynamicPadding}px` }}>
             {/* Debug indicator */}
             {showDebug && (
-              <div style={{
-                position: 'fixed',
-                top: '10px',
-                right: '10px',
-                background: 'rgba(0,0,0,0.8)',
-                color: 'white',
-                padding: '10px',
-                borderRadius: '5px',
-                fontSize: '14px',
-                fontFamily: 'monospace',
-                zIndex: 1000
-              }}>
-                <div>Current Pair: {currentPairIndex !== null ? currentPairIndex + 1 : 'None'}</div>
-                <div>Total Pairs: {Math.floor(messages.length / 2)}</div>
-                <div style={{color: currentPairIndex === Math.floor(messages.length / 2) - 1 ? '#4CAF50' : '#f44336'}}>
-                  Focus: {currentPairIndex === Math.floor(messages.length / 2) - 1 ? 'ON' : 'OFF'}
+              <>
+                <div style={{
+                  position: 'fixed',
+                  top: '10px',
+                  right: '10px',
+                  background: 'rgba(0,0,0,0.8)',
+                  color: 'white',
+                  padding: '10px',
+                  borderRadius: '5px',
+                  fontSize: '14px',
+                  fontFamily: 'monospace',
+                  zIndex: 1000
+                }}>
+                  <div>Current Pair: {currentPairIndex !== null ? currentPairIndex + 1 : 'None'}</div>
+                  <div>Total Pairs: {Math.floor(messages.length / 2)}</div>
+                  <div style={{color: currentPairIndex === Math.floor(messages.length / 2) - 1 ? '#4CAF50' : '#f44336'}}>
+                    Focus: {currentPairIndex === Math.floor(messages.length / 2) - 1 ? 'ON' : 'OFF'}
+                  </div>
                 </div>
-              </div>
+                
+                {/* Viewport center indicator */}
+                <div style={{
+                  position: 'absolute',
+                  left: '0',
+                  right: '0',
+                  top: '50%',
+                  height: '2px',
+                  background: 'rgba(255, 0, 0, 0.5)',
+                  pointerEvents: 'none',
+                  zIndex: 999
+                }}>
+                  <div style={{
+                    position: 'absolute',
+                    left: '50%',
+                    top: '-10px',
+                    transform: 'translateX(-50%)',
+                    background: 'rgba(255, 0, 0, 0.8)',
+                    color: 'white',
+                    padding: '2px 8px',
+                    borderRadius: '3px',
+                    fontSize: '12px',
+                    fontFamily: 'monospace'
+                  }}>
+                    CENTER
+                  </div>
+                </div>
+                
+                {/* 30% visibility threshold indicators */}
+                <div style={{
+                  position: 'absolute',
+                  left: '0',
+                  right: '0',
+                  top: '35%',
+                  height: '1px',
+                  background: 'rgba(0, 255, 0, 0.3)',
+                  pointerEvents: 'none',
+                  zIndex: 999
+                }} />
+                <div style={{
+                  position: 'absolute',
+                  left: '0',
+                  right: '0',
+                  bottom: '35%',
+                  height: '1px',
+                  background: 'rgba(0, 255, 0, 0.3)',
+                  pointerEvents: 'none',
+                  zIndex: 999
+                }} />
+              </>
             )}
         <AnimatePresence>
           {(() => {
