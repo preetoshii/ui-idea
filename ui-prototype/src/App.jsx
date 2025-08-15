@@ -115,7 +115,7 @@ function App() {
         />
 
         <AnimatePresence>
-          {!whiteboardMode && <AIOrb />}
+          {!whiteboardMode && <AIOrb chatExpanded={chatExpanded} />}
         </AnimatePresence>
 
         <AnimatePresence mode="wait">

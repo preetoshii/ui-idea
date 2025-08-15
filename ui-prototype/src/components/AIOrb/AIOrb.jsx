@@ -1,21 +1,29 @@
 import { motion } from 'framer-motion'
 import './AIOrb.css'
 
-const AIOrb = () => {
+const AIOrb = ({ chatExpanded }) => {
   return (
     <motion.div 
       className="ai-orb-container"
       initial={{ opacity: 0, scale: 0.8 }}
       animate={{ 
         opacity: 1,
-        scale: 1,
-        y: [0, -10, 0],
+        scale: chatExpanded ? 0.5 : 1,
+        y: chatExpanded ? -200 : [0, -10, 0],
+        x: chatExpanded ? 0 : 0,
       }}
       exit={{ opacity: 0, scale: 0.8 }}
       transition={{
         opacity: { duration: 0.3, delay: 0.6 },
-        scale: { duration: 0.3, delay: 0.6 },
-        y: {
+        scale: { 
+          duration: chatExpanded ? 0.5 : 0.3, 
+          delay: chatExpanded ? 0 : 0.6,
+          ease: "easeOut"
+        },
+        y: chatExpanded ? {
+          duration: 0.5,
+          ease: "easeOut"
+        } : {
           duration: 7.5,
           repeat: Infinity,
           ease: "easeInOut"
