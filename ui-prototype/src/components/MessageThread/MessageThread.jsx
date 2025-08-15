@@ -36,7 +36,7 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode, onFocusPosition
   
   // Calculate dynamic padding based on viewport and last pair
   useEffect(() => {
-    const PADDING_MODIFIER = 1.3 // Increase this to add more padding (1.0 = centered, 1.5 = 50% more padding, etc.)
+    const PADDING_MODIFIER = 1.8 // Increase this to add more padding (1.0 = centered, 1.5 = 50% more padding, etc.)
     
     const calculatePadding = () => {
       const scrollWrapper = messageThreadRef.current?.parentElement
