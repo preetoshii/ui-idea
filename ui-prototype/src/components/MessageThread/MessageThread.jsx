@@ -299,8 +299,8 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode, onFocusPosition
         if (aiMessage) {
           const rect = aiMessage.getBoundingClientRect()
           const newPosition = {
-            left: rect.left - 220, // Position orb further to the left of AI message
-            top: rect.top + rect.height / 2 // Center vertically on AI message
+            left: rect.left - 220 - 100, // Position orb to the left (220px gap) and center it (100px for half orb width)
+            top: rect.top + rect.height / 2 - 100 // Center vertically on AI message (100px for half orb height)
           }
           setFocusedAIPosition(newPosition)
           // Notify parent component of position change
