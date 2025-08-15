@@ -81,15 +81,6 @@
   word-wrap: break-word;
 }
 
-/* Typing cursor for streaming */
-.typing-cursor {
-  display: inline-block;
-  width: 2px;
-  height: 16px;
-  background: #666;
-  margin-left: 2px;
-  vertical-align: text-bottom;
-}
 
 /* Responsive adjustments */
 @media (max-width: 768px) {

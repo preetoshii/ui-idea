@@ -70,38 +70,27 @@ function App() {
     
     // Simulate AI response with streaming
     setTimeout(() => {
+      const fullResponse = "I understand your question. Let me process that for you. This response will fade in word by word to create a smooth streaming effect."
       const aiMessage = {
         id: (Date.now() + 1).toString(),
         type: 'ai',
-        content: '',
+        content: fullResponse,
         timestamp: new Date(),
         isStreaming: true
       }
       setMessages(prev => [...prev, aiMessage])
       
-      // Simulate streaming text
-      const fullResponse = "I'm processing your message. This is a simulated streaming response that will appear character by character."
-      let index = 0
+      // Mark streaming complete after animation duration
+      const wordCount = fullResponse.split(' ').length
+      const animationDuration = wordCount * 80 + 800 // delay + fade duration
       
-      const streamInterval = setInterval(() => {
-        if (index < fullResponse.length) {
-          const chunk = fullResponse.slice(0, index + 5) // Stream 5 chars at a time
-          setMessages(prev => prev.map(msg => 
-            msg.id === aiMessage.id 
-              ? { ...msg, content: chunk }
-              : msg
-          ))
-          index += 5
-        } else {
-          // Mark streaming complete
-          setMessages(prev => prev.map(msg => 
-            msg.id === aiMessage.id 
-              ? { ...msg, isStreaming: false }
-              : msg
-          ))
-          clearInterval(streamInterval)
-        }
-      }, 50)
+      setTimeout(() => {
+        setMessages(prev => prev.map(msg => 
+          msg.id === aiMessage.id 
+            ? { ...msg, isStreaming: false }
+            : msg
+        ))
+      }, animationDuration)
     }, 1000)
   }
 
