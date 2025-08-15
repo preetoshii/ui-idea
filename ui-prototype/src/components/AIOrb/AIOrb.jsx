@@ -69,15 +69,15 @@ const AIOrb = ({ chatExpanded, audioLevels = { level: 0, lowFreq: 0, highFreq: 0
         },
         top: {
           type: "spring",
-          stiffness: focusPosition ? 60 : 100, // Smoother when moving to focus
-          damping: focusPosition ? 30 : 25,
-          mass: focusPosition ? 1.5 : 1
+          stiffness: 120, // Consistent snappy movement
+          damping: 20,     // Reduced overshoot
+          mass: 0.8        // Less momentum
         },
         left: {
           type: "spring",
-          stiffness: focusPosition ? 60 : 100, // Smoother when moving to focus
-          damping: focusPosition ? 30 : 25,
-          mass: focusPosition ? 1.5 : 1
+          stiffness: 120, // Consistent snappy movement
+          damping: 20,     // Reduced overshoot
+          mass: 0.8        // Less momentum
         }
       }}
     >
