@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { AnimatePresence } from 'framer-motion'
+import speechService from './services/speechService'
 import Sidebar from './components/Sidebar/Sidebar'
 import DotGridBackground from './components/DotGrid/DotGridBackground'
 import Cards from './components/Cards/Cards'
@@ -44,18 +45,28 @@ function App() {
   ])
   const [chatExpanded, setChatExpanded] = useState(false)
   const [singleDisplayMode, setSingleDisplayMode] = useState(false)
+  const [speechEnabled, setSpeechEnabled] = useState(true)
 
   useEffect(() => {
     const handleKeyPress = (e) => {
       if (e.key === '/') {
         e.preventDefault()
         setGrayscale(!grayscale)
+      } else if (e.key === 's' && e.metaKey) {
+        e.preventDefault()
+        setSpeechEnabled(!speechEnabled)
+        if (!speechEnabled) {
+          speechService.stop()
+        }
       }
     }
 
     window.addEventListener('keydown', handleKeyPress)
-    return () => window.removeEventListener('keydown', handleKeyPress)
-  }, [grayscale])
+    return () => {
+      window.removeEventListener('keydown', handleKeyPress)
+      speechService.stop() // Stop speech on unmount
+    }
+  }, [grayscale, speechEnabled])
 
   const sendMessage = (content) => {
     if (!content.trim()) return
@@ -115,6 +126,11 @@ function App() {
         setMessages(prev => [...prev, aiMessage])
       }
       
+      // Speak the AI response if enabled
+      if (speechEnabled) {
+        speechService.speak(randomResponse)
+      }
+      
       // No need to update streaming state - the animation completes on its own
     }, 1000)
   }
@@ -139,6 +155,9 @@ function App() {
           setWhiteboardMode={(mode) => {
             setWhiteboardMode(mode)
             setSingleDisplayMode(mode) // Activate single display when entering canvas mode
+            if (mode) {
+              speechService.stop() // Stop speech when entering canvas mode
+            }
           }}
         />
 

@@ -17,8 +17,8 @@ const AIMessage = ({ message }) => {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{
-                    duration: 0.8,
-                    delay: index * 0.08,
+                    duration: 1.2,
+                    delay: index * 0.15,
                     ease: "easeOut"
                   }}
                   style={{ display: 'inline-block', marginRight: '0.25em' }}

@@ -23,12 +23,47 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode }) => {
       })
     }
   }
+  
+  const scrollToMessage = (messageId) => {
+    const messageThread = messagesEndRef.current?.parentElement
+    if (messageThread) {
+      const messageElement = document.querySelector(`[data-message-id="${messageId}"]`)
+      if (messageElement) {
+        const containerTop = messageThread.offsetTop
+        const messageTop = messageElement.offsetTop
+        // Scroll so the message appears at the top of the container
+        messageThread.scrollTo({
+          top: messageTop - containerTop,
+          behavior: 'smooth'
+        })
+      }
+    }
+  }
 
   useEffect(() => {
-    // Simple scroll to bottom when messages change
-    setTimeout(() => {
-      scrollToBottom()
-    }, 100)
+    if (messages.length > 0) {
+      const lastMessage = messages[messages.length - 1]
+      const secondToLastMessage = messages[messages.length - 2]
+      
+      // If the last message is from the user, scroll to show it at the top
+      if (lastMessage.type === 'user') {
+        setTimeout(() => {
+          scrollToMessage(lastMessage.id)
+        }, 100)
+      } 
+      // If last message is AI and previous is user, scroll to show the user message at top
+      else if (lastMessage.type === 'ai' && secondToLastMessage?.type === 'user') {
+        setTimeout(() => {
+          scrollToMessage(secondToLastMessage.id)
+        }, 100)
+      } 
+      // Otherwise just scroll to bottom
+      else {
+        setTimeout(() => {
+          scrollToBottom()
+        }, 100)
+      }
+    }
   }, [messages])
   
   // Set up intersection observer for fade effect
@@ -100,7 +135,11 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode }) => {
             if (!shouldShow) return null
             
             return (
-              <div key={message.id} className={`message-wrapper in-view ${isLastInPair ? 'last-in-pair' : ''}`}>
+              <div 
+                key={message.id} 
+                data-message-id={message.id}
+                className={`message-wrapper in-view ${isLastInPair ? 'last-in-pair' : ''}`}
+              >
                 {message.type === 'ai' ? (
                   <AIMessage message={message} />
                 ) : (
