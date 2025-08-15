@@ -8,7 +8,10 @@ const MessageThread = ({ messages, isVisible }) => {
   const messagesEndRef = useRef(null)
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+    const messageThread = messagesEndRef.current?.parentElement
+    if (messageThread) {
+      messageThread.scrollTop = messageThread.scrollHeight
+    }
   }
 
   useEffect(() => {
