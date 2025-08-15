@@ -19,24 +19,24 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode }) => {
   }, [isVisible, hasInitialized])
 
   const scrollToBottom = () => {
-    const messageThread = messagesEndRef.current?.parentElement
-    if (messageThread) {
-      messageThread.scrollTo({
-        top: messageThread.scrollHeight,
+    const scrollWrapper = messagesEndRef.current?.parentElement?.parentElement
+    if (scrollWrapper) {
+      scrollWrapper.scrollTo({
+        top: scrollWrapper.scrollHeight,
         behavior: 'smooth'
       })
     }
   }
   
   const scrollToMessage = (messageId) => {
-    const messageThread = messagesEndRef.current?.parentElement
-    if (messageThread) {
+    const scrollWrapper = messagesEndRef.current?.parentElement?.parentElement
+    if (scrollWrapper) {
       const messageElement = document.querySelector(`[data-message-id="${messageId}"]`)
       if (messageElement) {
-        const containerTop = messageThread.offsetTop
+        const containerTop = scrollWrapper.offsetTop
         const messageTop = messageElement.offsetTop
         // Scroll so the message appears at the top of the container
-        messageThread.scrollTo({
+        scrollWrapper.scrollTo({
           top: messageTop - containerTop,
           behavior: 'smooth'
         })
@@ -77,8 +77,8 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode }) => {
   
   // Set up intersection observer for fade effect
   useEffect(() => {
-    const messageThread = messagesEndRef.current?.parentElement
-    if (!messageThread) return
+    const scrollWrapper = messagesEndRef.current?.parentElement?.parentElement
+    if (!scrollWrapper) return
     
     const observer = new IntersectionObserver(
       (entries) => {
@@ -91,14 +91,14 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode }) => {
         })
       },
       {
-        root: messageThread,
+        root: scrollWrapper,
         threshold: 0.75, // Trigger when 75% visible
         rootMargin: '0px'
       }
     )
     
     // Observe all message wrappers
-    const messageWrappers = messageThread.querySelectorAll('.message-wrapper')
+    const messageWrappers = scrollWrapper.querySelectorAll('.message-wrapper')
     messageWrappers.forEach(wrapper => observer.observe(wrapper))
     
     return () => observer.disconnect()
@@ -113,13 +113,13 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode }) => {
     
     // Add a small delay to ensure DOM is ready and animations are complete
     const timer = setTimeout(() => {
-      const messageThread = messageThreadRef.current
-      if (!messageThread) {
-        console.log('No messageThread ref after timeout!')
+      const scrollWrapper = messageThreadRef.current?.parentElement
+      if (!scrollWrapper) {
+        console.log('No scrollWrapper ref after timeout!')
         return
       }
       
-      console.log('Setting up intersection observer on:', messageThread)
+      console.log('Setting up intersection observer on:', scrollWrapper)
     
     const observer = new IntersectionObserver(
       (entries) => {
@@ -148,14 +148,14 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode }) => {
         }
       },
       {
-        root: messageThread,
+        root: scrollWrapper,
         rootMargin: '-20% 0px -20% 0px', // Only consider the middle 60% of viewport
         threshold: [0.5] // Only fire when crossing 50% visibility
       }
     )
     
     // Observe all message pairs
-    const messagePairs = messageThread.querySelectorAll('.message-pair')
+    const messagePairs = scrollWrapper.querySelectorAll('.message-pair')
     messagePairs.forEach(pair => observer.observe(pair))
     
     return () => observer.disconnect()
@@ -197,7 +197,8 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode }) => {
             }
           }}
         >
-          <div className="message-thread" ref={messageThreadRef}>
+          <div className="message-thread-scroll-wrapper">
+            <div className="message-thread" ref={messageThreadRef}>
             {/* Debug indicator */}
             <div style={{
               position: 'fixed',
@@ -268,6 +269,9 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode }) => {
                     scale: { duration: 0.3, ease: "easeOut" },
                     opacity: { duration: 0.3, ease: "easeOut" }
                   }}
+                  style={{
+                    transformOrigin: 'center center'
+                  }}
                 >
                   <div className="message-wrapper in-view" data-message-id={pair.user.id}>
                     <UserMessage message={pair.user} />
@@ -281,6 +285,7 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode }) => {
           })()}
         </AnimatePresence>
             <div ref={messagesEndRef} />
+          </div>
           </div>
         </motion.div>
       )}

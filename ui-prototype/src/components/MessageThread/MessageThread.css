@@ -3,12 +3,28 @@
   top: calc(15vh + 50px);
   left: 50%;
   transform: translateX(-50%);
-  width: 900px;
-  max-width: 90vw;
+  width: 1100px; /* Increased width to accommodate scaling */
+  max-width: 95vw;
   height: calc(80vh - 100px);
   display: flex;
   flex-direction: column;
   z-index: 40;
+  overflow: visible;
+}
+
+/* Scroll wrapper to handle overflow independently */
+.message-thread-scroll-wrapper {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: visible;
+  position: relative;
+  /* Hide scrollbar */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.message-thread-scroll-wrapper::-webkit-scrollbar {
+  display: none;
 }
 
 /* Single display mode adjustments */
@@ -33,17 +49,14 @@
 }
 
 .message-thread {
-  flex: 1;
-  overflow-y: auto;
-  overflow-x: visible;
-  padding: 20px;
+  padding: 20px 100px; /* Add horizontal padding for scaling space */
   padding-bottom: 400px;
   display: flex;
   flex-direction: column;
   gap: 40px;
-  scroll-behavior: smooth;
   position: relative;
   scroll-snap-type: y proximity;
+  overflow: visible;
   mask-image: linear-gradient(
     to bottom,
     transparent 0%,
@@ -124,6 +137,18 @@
   gap: 40px;
   overflow: visible;
   scroll-snap-align: center;
+  position: relative;
+  /* Debug: Add visual border to see bounds */
+  /* border: 2px solid red; */
+}
+
+/* Add padding to the last pair to accommodate scaling */
+.message-pair.latest-pair {
+  /* Create extra space for scaling without affecting layout */
+  padding: 60px 80px;
+  margin: -60px -80px;
+  /* Ensure the transform origin is centered */
+  transform-origin: center center;
 }
 
 /* AI Message styling */
@@ -134,7 +159,7 @@
 .ai-message-content {
   display: flex;
   align-items: flex-start;
-  max-width: 80%;
+  max-width: 70%; /* Reduced to maintain proportions with wider container */
 }
 
 
@@ -153,7 +178,7 @@
 
 .user-message-content {
   display: flex;
-  max-width: 80%;
+  max-width: 70%; /* Reduced to maintain proportions with wider container */
 }
 
 .user-bubble {
