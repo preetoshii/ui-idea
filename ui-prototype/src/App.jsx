@@ -241,13 +241,15 @@ function App() {
         setMessages(prev => [...prev, aiMessage])
       }
       
-      // Clear waiting state
-      setWaitingForAI(false)
-      
       // Speak the AI response if enabled
       if (speechEnabled) {
         speechService.speak(randomResponse)
       }
+      
+      // Clear waiting state with delay to ensure position is calculated
+      setTimeout(() => {
+        setWaitingForAI(false)
+      }, 200) // Additional delay for position calculation
       
       // No need to update streaming state - the animation completes on its own
     }, 1000)
@@ -281,7 +283,7 @@ function App() {
         />
 
         <AnimatePresence>
-          {!whiteboardMode && <AIOrb key="ai-orb" chatExpanded={chatExpanded} audioLevels={audioLevels} focusPosition={focusPosition} />}
+          {!whiteboardMode && <AIOrb key="ai-orb" chatExpanded={chatExpanded} audioLevels={audioLevels} focusPosition={focusPosition} waitingForAI={waitingForAI} />}
         </AnimatePresence>
 
         <AnimatePresence mode="wait">

@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import useTooltip from '../../hooks/useTooltip'
 import './AIOrb.css'
 
-const AIOrb = ({ chatExpanded, audioLevels = { level: 0, lowFreq: 0, highFreq: 0 }, focusPosition }) => {
+const AIOrb = ({ chatExpanded, audioLevels = { level: 0, lowFreq: 0, highFreq: 0 }, focusPosition, waitingForAI }) => {
   // Create lagged versions of audio levels for different blob behaviors
   const [laggedLevels, setLaggedLevels] = useState({ level: 0, lowFreq: 0 })
   const [isHovered, setIsHovered] = useState(false)
@@ -57,15 +57,15 @@ const AIOrb = ({ chatExpanded, audioLevels = { level: 0, lowFreq: 0, highFreq: 0
         left: 'calc(50vw - 100px)'
       }}
       animate={{ 
-        opacity: 1,
+        opacity: waitingForAI ? 0 : 1,
         top: focusPosition ? `${focusPosition.top}px` : (chatExpanded ? 'calc(11vh - 100px)' : 'calc(50vh - 100px)'),
         left: focusPosition ? `${focusPosition.left}px` : 'calc(50vw - 100px)'
       }}
       exit={{ opacity: 0 }}
       transition={{
         opacity: { 
-          duration: 0.6,
-          delay: 0.4 // Add delay for fade-in
+          duration: waitingForAI ? 0.3 : 0.5,
+          delay: waitingForAI ? 0 : 0.4 // Quick fade out, longer delayed fade in
         },
         top: {
           type: "spring",

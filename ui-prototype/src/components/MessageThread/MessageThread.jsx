@@ -353,7 +353,18 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode, onFocusPosition
             }
           }}
         >
-          <div className="message-thread-scroll-wrapper">
+          <motion.div 
+            className="message-thread-scroll-wrapper"
+            animate={{
+              opacity: waitingForAI ? 0 : 1
+            }}
+            transition={{
+              opacity: {
+                duration: waitingForAI ? 0.3 : 0.5,
+                delay: waitingForAI ? 0 : 0.4
+              }
+            }}
+          >
             <div className="message-thread" ref={messageThreadRef} style={{ paddingBottom: `${dynamicPadding}px` }}>
             {/* Debug indicator */}
             {showDebug && (
@@ -501,7 +512,7 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode, onFocusPosition
         </AnimatePresence>
             <div ref={messagesEndRef} />
           </div>
-          </div>
+          </motion.div>
         </motion.div>
       )}
     </AnimatePresence>
