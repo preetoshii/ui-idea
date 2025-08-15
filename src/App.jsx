@@ -9,6 +9,7 @@ import CanvasToggle from './components/CanvasToggle/CanvasToggle'
 import CanvasBorder from './components/CanvasBorder/CanvasBorder'
 import AIOrb from './components/AIOrb/AIOrb'
 import MessageThread from './components/MessageThread/MessageThread'
+import MicroText from './components/MicroText/MicroText'
 import CursorTooltip from './components/CursorTooltip/CursorTooltip'
 import './App.css'
 
@@ -154,6 +155,7 @@ function App() {
   const [focusPosition, setFocusPosition] = useState(null)
   const [waitingForAI, setWaitingForAI] = useState(false)
   const [isTransitioningIn, setIsTransitioningIn] = useState(false)
+  const [collapsedMode, setCollapsedMode] = useState(false)
 
   useEffect(() => {
     const handleKeyPress = (e) => {
@@ -166,6 +168,9 @@ function App() {
         if (!speechEnabled) {
           speechService.stop()
         }
+      } else if (e.key === '[') {
+        e.preventDefault()
+        setCollapsedMode(!collapsedMode)
       }
     }
 
@@ -201,20 +206,21 @@ function App() {
     // Simulate AI response with streaming
     setTimeout(() => {
       const responses = [
-        // Medium
-        "What I'm hearing in your words is a deep yearning for something more meaningful. That feeling of restlessness you're describing often emerges when we've outgrown our current situation but haven't yet stepped into what's next. Tell me, when you imagine yourself five years from now, living a life that truly lights you up - what do you see? What are you doing differently, and perhaps more importantly, who have you become?",
+        "I hear that you're feeling stuck. That takes courage to admit. What's one small thing that used to bring you joy that you've stopped doing?",
         
-        "That's a powerful realization you've just shared. The gap between who we are and who we're expected to be can feel overwhelming. But here's what I'm curious about - what if that discomfort is actually your inner wisdom speaking? What if it's pointing you toward a more authentic version of yourself? What would it look like to honor that voice, even in small ways?",
+        "It sounds like you're ready for a change but unsure where to start. That's completely normal. What would your ideal day look like if there were no limitations?",
         
-        // Long
-        "I'm struck by the courage it takes to admit you're not where you want to be. That awareness itself is the beginning of transformation. What you're describing - this feeling of going through the motions, of living someone else's definition of success - is something many people experience but few have the bravery to confront. You mentioned feeling disconnected from your true self. I'm wondering if we could explore that together. What parts of yourself have you had to dim or hide to fit into your current life? And what would it mean to slowly start turning those lights back on?",
+        "Thank you for sharing something so vulnerable. The exhaustion you're describing is real. When was the last time you did something just for yourself?",
         
-        "Thank you for trusting me with something so vulnerable. The pattern you're describing - giving so much of yourself that there's nothing left - is something I see in many caring, capable people. It often starts from a beautiful place of wanting to help and support others. But somewhere along the way, we can lose ourselves in the process. I'm curious about your relationship with boundaries. When you think about saying 'no' to protect your own energy and wellbeing, what comes up for you? What stories do you tell yourself about what might happen?",
+        "What you're experiencing is more common than you think. Many people feel this disconnect between who they are and who they're expected to be. What part of yourself do you miss the most?",
         
-        // Very long
-        "What you're experiencing right now - this crossroads moment - is actually sacred territory. It's the space between who you've been and who you're becoming. I know it feels uncomfortable, maybe even scary, but these threshold moments are where the most profound growth happens. You mentioned feeling like you're wearing a mask, playing a role that no longer fits. That's such an important awareness. Many people go through their entire lives without recognizing that disconnect. The fact that you're feeling it, naming it, means something in you is ready for change. But here's what I want you to consider: transformation doesn't have to be dramatic or sudden. Sometimes the most sustainable changes happen through small, consistent choices that honor your authentic self. What would it look like to remove that mask for just five minutes a day? Who would you be in those moments? What would you say, do, or choose differently? And how might those five minutes gradually expand into a life that feels genuinely yours?",
+        "I'm hearing that you want more meaning in your life. That's a powerful realization. If you could change one thing about your daily routine tomorrow, what would it be?",
         
-        "I'm really moved by what you've shared. The journey you're describing - from external achievement to internal fulfillment - is one of the most important transitions we can make as human beings. You've spent years building a life that looks successful from the outside, and now you're brave enough to ask whether it actually feels successful on the inside. That takes tremendous courage. What strikes me is that you already know something needs to change. Your body knows it - you mentioned the exhaustion, the tension. Your emotions know it - the Sunday night dread, the morning heaviness. Your spirit knows it - that sense of something missing, something calling you forward. The question isn't whether to change, but how to honor this knowing in a way that feels sustainable and true to who you are. I'm wondering if we could start by exploring what 'success' actually means to you - not what you've been told it should mean, not what others expect, but what would make you feel truly alive and fulfilled. What comes up when you sit with that question?"
+        "It's brave to acknowledge when things aren't working. Your feelings are valid and important. What would 'success' mean to you if no one else's opinion mattered?",
+        
+        "The fact that you're questioning things shows growth is already happening. Change doesn't have to be dramatic. What's one boundary you wish you could set?",
+        
+        "I can sense the weight you're carrying. You don't have to have all the answers right now. What would it feel like to give yourself permission to not be perfect?"
       ]
       
       const randomResponse = responses[Math.floor(Math.random() * responses.length)]
@@ -282,10 +288,15 @@ function App() {
 
         <MessageThread 
           messages={messages} 
-          isVisible={chatExpanded}
+          isVisible={chatExpanded && !whiteboardMode && !collapsedMode}
           onFocusPositionChange={setFocusPosition}
           waitingForAI={waitingForAI}
           onTransitioningInChange={setIsTransitioningIn}
+        />
+        
+        <MicroText 
+          messages={messages}
+          isVisible={chatExpanded && (collapsedMode || whiteboardMode)}
         />
         
         <NewChatInput 

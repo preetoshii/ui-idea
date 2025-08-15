@@ -1,0 +1,77 @@
+.micro-text-container {
+  position: fixed;
+  bottom: 160px; /* Increased spacing above the chat input */
+  width: 600px;
+  max-width: 90vw;
+  z-index: 45;
+  display: flex;
+  justify-content: center;
+  box-sizing: border-box;
+  margin: 0 auto;
+  left: 0;
+  right: 0;
+}
+
+.micro-text-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 20px;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+/* Hover state for micro text */
+.micro-text-wrapper:hover {
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08), 
+              0 2px 8px rgba(0, 0, 0, 0.04);
+  transform: scale(1.02);
+}
+
+/* Ensure message wrapper takes full width */
+.micro-text-container .message-wrapper {
+  width: 100%;
+}
+
+/* Override the base message class */
+.micro-text-container .message {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+/* Override AI message styles for micro text */
+.micro-text-container .message-ai {
+  width: 100%;
+  justify-content: center;
+  margin: 0;
+}
+
+.micro-text-container .ai-message-content {
+  max-width: 100%;
+  margin: 0 auto;
+  justify-content: center;
+}
+
+.micro-text-container .ai-bubble {
+  text-align: center;
+  background: transparent; /* Remove bubble background since wrapper has it */
+  border: none;
+  padding: 0;
+}
+
+.micro-text-container .message-text {
+  text-align: center;
+  color: #333;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .micro-text-container {
+    width: 100%;
+    padding: 0 20px;
+  }
+}
