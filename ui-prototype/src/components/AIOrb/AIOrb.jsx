@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { useState, useEffect } from 'react'
+import useTooltip from '../../hooks/useTooltip'
 import './AIOrb.css'
 
 const AIOrb = ({ chatExpanded, audioLevels = { level: 0, lowFreq: 0, highFreq: 0 }, focusMode }) => {
@@ -9,6 +10,8 @@ const AIOrb = ({ chatExpanded, audioLevels = { level: 0, lowFreq: 0, highFreq: 0
   const [isMuted, setIsMuted] = useState(false)
   const [previousVolume, setPreviousVolume] = useState(1)
   const [shouldPop, setShouldPop] = useState(false)
+  
+  const tooltipProps = useTooltip('Maz the Coach')
   
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -81,8 +84,14 @@ const AIOrb = ({ chatExpanded, audioLevels = { level: 0, lowFreq: 0, highFreq: 0
     >
       <motion.div
         className="ai-orb-scale-wrapper"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
+        onMouseEnter={(e) => {
+          setIsHovered(true)
+          tooltipProps.onMouseEnter(e)
+        }}
+        onMouseLeave={() => {
+          setIsHovered(false)
+          tooltipProps.onMouseLeave()
+        }}
         onClick={handleMuteToggle}
         animate={{
           scale: shouldPop 

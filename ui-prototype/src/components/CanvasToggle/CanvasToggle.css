@@ -4,7 +4,7 @@
     right: 40px;
     padding: 16px 32px;
     background: transparent;
-    border: 2px solid #666;
+    border: 2px solid #333;
     border-radius: 4px;
     cursor: pointer;
     font-size: 12px;
@@ -21,7 +21,7 @@
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: #999;
+    background: #333;
     transition: all 0.3s;
     position: relative;
 }
