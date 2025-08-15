@@ -4,7 +4,7 @@ import AIMessage from './AIMessage'
 import UserMessage from './UserMessage'
 import './MessageThread.css'
 
-const MessageThread = ({ messages, isVisible, singleDisplayMode }) => {
+const MessageThread = ({ messages, isVisible, singleDisplayMode, onFocusPositionChange }) => {
   const messagesEndRef = useRef(null)
   const [hasInitialized, setHasInitialized] = useState(false)
   const messageThreadRef = useRef(null)
@@ -12,6 +12,7 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode }) => {
   const [currentPairIndex, setCurrentPairIndex] = useState(null)
   const [dynamicPadding, setDynamicPadding] = useState(100)
   const [showDebug, setShowDebug] = useState(false)
+  const [focusedAIPosition, setFocusedAIPosition] = useState(null)
   
   
   useEffect(() => {
@@ -223,6 +224,60 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode }) => {
 
   // Find the latest AI message
   const latestAIMessage = messages.filter(m => m.type === 'ai').slice(-1)[0]
+  
+  // Update AI position when focus mode changes
+  useEffect(() => {
+    if (!isVisible) return
+    
+    const updateAIPosition = () => {
+      const totalPairs = Math.floor(messages.length / 2)
+      const isInFocusMode = currentPairIndex === totalPairs - 1
+      
+      if (isInFocusMode) {
+        // Find the AI message in the focused pair
+        const messagePairs = messageThreadRef.current?.querySelectorAll('.message-pair')
+        const focusedPair = messagePairs?.[currentPairIndex]
+        
+        if (focusedPair) {
+          const aiMessage = focusedPair.querySelector('.ai-message-content')
+          if (aiMessage) {
+            const rect = aiMessage.getBoundingClientRect()
+            const newPosition = {
+              left: rect.left - 150, // Position orb to the left of AI message
+              top: rect.top + rect.height / 2 // Center vertically on AI message
+            }
+            setFocusedAIPosition(newPosition)
+            // Notify parent component of position change
+            if (onFocusPositionChange) {
+              onFocusPositionChange(newPosition)
+            }
+          }
+        }
+      } else {
+        setFocusedAIPosition(null)
+        // Notify parent component to reset position
+        if (onFocusPositionChange) {
+          onFocusPositionChange(null)
+        }
+      }
+    }
+    
+    // Update position with a slight delay to ensure DOM is ready
+    const timer = setTimeout(updateAIPosition, 100)
+    
+    // Also update on scroll
+    const scrollWrapper = messageThreadRef.current?.parentElement
+    if (scrollWrapper) {
+      scrollWrapper.addEventListener('scroll', updateAIPosition)
+    }
+    
+    return () => {
+      clearTimeout(timer)
+      if (scrollWrapper) {
+        scrollWrapper.removeEventListener('scroll', updateAIPosition)
+      }
+    }
+  }, [currentPairIndex, messages, isVisible, onFocusPositionChange])
 
   return (
     <>

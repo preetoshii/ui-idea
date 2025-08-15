@@ -152,6 +152,7 @@ function App() {
   const [singleDisplayMode, setSingleDisplayMode] = useState(false)
   const [speechEnabled, setSpeechEnabled] = useState(true)
   const [audioLevels, setAudioLevels] = useState({ level: 0, lowFreq: 0, highFreq: 0 })
+  const [focusPosition, setFocusPosition] = useState(null)
 
   useEffect(() => {
     const handleKeyPress = (e) => {
@@ -273,7 +274,7 @@ function App() {
         />
 
         <AnimatePresence>
-          {!whiteboardMode && <AIOrb key="ai-orb" chatExpanded={chatExpanded} audioLevels={audioLevels} />}
+          {!whiteboardMode && <AIOrb key="ai-orb" chatExpanded={chatExpanded} audioLevels={audioLevels} focusPosition={focusPosition} />}
         </AnimatePresence>
 
         <AnimatePresence mode="wait">
@@ -288,6 +289,7 @@ function App() {
           messages={messages} 
           isVisible={chatExpanded}
           singleDisplayMode={singleDisplayMode}
+          onFocusPositionChange={setFocusPosition}
         />
         
         <NewChatInput 
