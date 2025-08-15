@@ -18,15 +18,25 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode }) => {
     }
   }, [isVisible, hasInitialized])
 
-  const scrollToBottom = () => {
+  const scrollToLatestPair = () => {
     const scrollWrapper = messagesEndRef.current?.parentElement?.parentElement
     if (scrollWrapper) {
-      // Ensure we scroll to the very bottom
-      const targetScroll = scrollWrapper.scrollHeight - scrollWrapper.clientHeight
-      scrollWrapper.scrollTo({
-        top: targetScroll,
-        behavior: 'smooth'
-      })
+      // Find the last message pair
+      const messagePairs = scrollWrapper.querySelectorAll('.message-pair')
+      const lastPair = messagePairs[messagePairs.length - 1]
+      
+      if (lastPair) {
+        // Get the position of the last pair
+        const pairTop = lastPair.offsetTop
+        // Calculate scroll position to put the pair 20vh from top
+        const viewportOffset = scrollWrapper.clientHeight * 0.2 // 20vh
+        const targetScroll = pairTop - viewportOffset
+        
+        scrollWrapper.scrollTo({
+          top: targetScroll,
+          behavior: 'smooth'
+        })
+      }
     }
   }
   
@@ -52,9 +62,9 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode }) => {
     previousMessageCount.current = messages.length
     
     if (isNewMessage && messages.length > 0) {
-      // Always scroll to bottom immediately for new messages
+      // Scroll to position the latest pair near the top
       setTimeout(() => {
-        scrollToBottom()
+        scrollToLatestPair()
       }, 50) // Minimal delay just to ensure DOM is updated
     }
   }, [messages, singleDisplayMode])
