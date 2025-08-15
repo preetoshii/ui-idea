@@ -4,7 +4,7 @@ import AIMessage from './AIMessage'
 import UserMessage from './UserMessage'
 import './MessageThread.css'
 
-const MessageThread = ({ messages, isVisible, singleDisplayMode, onFocusPositionChange, waitingForAI }) => {
+const MessageThread = ({ messages, isVisible, singleDisplayMode, onFocusPositionChange, waitingForAI, onTransitioningInChange }) => {
   const messagesEndRef = useRef(null)
   const [hasInitialized, setHasInitialized] = useState(false)
   const messageThreadRef = useRef(null)
@@ -13,6 +13,8 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode, onFocusPosition
   const [dynamicPadding, setDynamicPadding] = useState(100)
   const [showDebug, setShowDebug] = useState(false)
   const [focusedAIPosition, setFocusedAIPosition] = useState(null)
+  const [isTransitioningIn, setIsTransitioningIn] = useState(false)
+  const previousIsVisible = useRef(isVisible)
   
   
   useEffect(() => {
@@ -262,6 +264,24 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode, onFocusPosition
     const totalPairs = Math.floor(messages.length / 2)
     const isInFocusMode = currentPairIndex === totalPairs - 1
     
+    // Detect if we're transitioning from hidden to visible while in focus mode
+    const isOpeningInFocusMode = !previousIsVisible.current && isVisible && isInFocusMode
+    previousIsVisible.current = isVisible
+    
+    if (isOpeningInFocusMode) {
+      setIsTransitioningIn(true)
+      if (onTransitioningInChange) {
+        onTransitioningInChange(true)
+      }
+      // Clear the transition flag after delay
+      setTimeout(() => {
+        setIsTransitioningIn(false)
+        if (onTransitioningInChange) {
+          onTransitioningInChange(false)
+        }
+      }, 1000)
+    }
+    
     // When waiting for AI response, maintain the current position
     if (waitingForAI && focusedAIPosition) {
       // Keep the orb where it is - don't update or reset
@@ -308,7 +328,9 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode, onFocusPosition
     }
     
     // Update position with a slight delay to ensure DOM is ready
-    const timer = setTimeout(updateAIPosition, 100)
+    // Add extra delay when transitioning in from hidden state
+    const positionDelay = isOpeningInFocusMode ? 1000 : 100
+    const timer = setTimeout(updateAIPosition, positionDelay)
     
     // Also update on scroll to track position changes
     const scrollWrapper = messageThreadRef.current?.parentElement

@@ -154,6 +154,7 @@ function App() {
   const [audioLevels, setAudioLevels] = useState({ level: 0, lowFreq: 0, highFreq: 0 })
   const [focusPosition, setFocusPosition] = useState(null)
   const [waitingForAI, setWaitingForAI] = useState(false)
+  const [isTransitioningIn, setIsTransitioningIn] = useState(false)
 
   useEffect(() => {
     const handleKeyPress = (e) => {
@@ -283,7 +284,7 @@ function App() {
         />
 
         <AnimatePresence>
-          {!whiteboardMode && <AIOrb key="ai-orb" chatExpanded={chatExpanded} audioLevels={audioLevels} focusPosition={focusPosition} waitingForAI={waitingForAI} />}
+          {!whiteboardMode && <AIOrb key="ai-orb" chatExpanded={chatExpanded} audioLevels={audioLevels} focusPosition={focusPosition} waitingForAI={waitingForAI} isTransitioningIn={isTransitioningIn} />}
         </AnimatePresence>
 
         <AnimatePresence mode="wait">
@@ -300,6 +301,7 @@ function App() {
           singleDisplayMode={singleDisplayMode}
           onFocusPositionChange={setFocusPosition}
           waitingForAI={waitingForAI}
+          onTransitioningInChange={setIsTransitioningIn}
         />
         
         <NewChatInput 
