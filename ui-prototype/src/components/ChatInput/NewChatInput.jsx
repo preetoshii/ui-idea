@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import './NewChatInput.css'
 
-const NewChatInput = React.memo(() => {
+const NewChatInput = React.memo(({ onSendMessage, onExpandedChange }) => {
   const [isExpanded, setIsExpanded] = useState(false)
   const [shouldPop, setShouldPop] = useState(false)
   const [inputValue, setInputValue] = useState('')
@@ -13,7 +13,8 @@ const NewChatInput = React.memo(() => {
     if (isExpanded && inputRef.current) {
       inputRef.current.focus()
     }
-  }, [isExpanded])
+    onExpandedChange?.(isExpanded)
+  }, [isExpanded, onExpandedChange])
   
   const handleToggle = () => {
     setShouldAnimateToggle(true)
@@ -96,6 +97,15 @@ const NewChatInput = React.memo(() => {
         placeholder="Type something..."
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
+        onKeyPress={(e) => {
+          if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault()
+            if (inputValue.trim()) {
+              onSendMessage?.(inputValue)
+              setInputValue('')
+            }
+          }
+        }}
         animate={{ 
           opacity: isExpanded ? 1 : 0,
           pointerEvents: isExpanded ? 'auto' : 'none'
@@ -123,8 +133,7 @@ const NewChatInput = React.memo(() => {
               transition={{ duration: 0.1 }}
               onClick={(e) => {
                 e.stopPropagation()
-                // Handle send action here
-                console.log('Send:', inputValue)
+                onSendMessage?.(inputValue)
                 setInputValue('')
               }}
             >
