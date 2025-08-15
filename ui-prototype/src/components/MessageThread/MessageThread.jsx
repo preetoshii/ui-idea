@@ -20,14 +20,14 @@ const MessageThread = ({ messages, isVisible }) => {
       {isVisible && (
         <motion.div 
           className="message-thread-container"
-          initial={{ y: '150vh' }}
-          animate={{ y: 0 }}
-          exit={{ y: '150vh' }}
+          initial={{ y: '150vh', x: '-50%' }}
+          animate={{ y: 0, x: '-50%' }}
+          exit={{ y: '150vh', x: '-50%' }}
           transition={{
             type: 'spring',
-            damping: 30,
-            stiffness: 200,
-            mass: 0.8
+            damping: 20,
+            stiffness: 50,
+            mass: 2
           }}
         >
           <div className="message-thread">
