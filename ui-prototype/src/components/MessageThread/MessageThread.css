@@ -21,6 +21,21 @@
   /* Hide scrollbar */
   scrollbar-width: none;
   -ms-overflow-style: none;
+  /* Apply the gradient mask here instead */
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black 60px,
+    black calc(100% - 60px),
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black 60px,
+    black calc(100% - 60px),
+    transparent 100%
+  );
 }
 
 .message-thread-scroll-wrapper::-webkit-scrollbar {
@@ -38,9 +53,12 @@
 .message-thread-container.single-display .message-thread {
   padding-bottom: 20px;
   gap: 0;
+  overflow-y: hidden;
+}
+
+.message-thread-container.single-display .message-thread-scroll-wrapper {
   mask-image: none;
   -webkit-mask-image: none;
-  overflow-y: hidden;
 }
 
 /* Hide dividers in single display mode */
@@ -57,20 +75,7 @@
   position: relative;
   scroll-snap-type: y proximity;
   overflow: visible;
-  mask-image: linear-gradient(
-    to bottom,
-    transparent 0%,
-    black 60px,
-    black calc(100% - 60px),
-    transparent 100%
-  );
-  -webkit-mask-image: linear-gradient(
-    to bottom,
-    transparent 0%,
-    black 60px,
-    black calc(100% - 60px),
-    transparent 100%
-  );
+  /* Removed mask from here since it's now on the scroll wrapper */
 }
 
 /* Focus mode thread adjustments */
