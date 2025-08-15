@@ -167,6 +167,9 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode, onFocusPosition
       return
     }
     
+    let updateTimeout = null
+    let lastValidPairIndex = currentPairIndex
+    
     // Add a small delay to ensure DOM is ready and animations are complete
     const timer = setTimeout(() => {
       const scrollWrapper = messageThreadRef.current?.parentElement
@@ -179,40 +182,75 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode, onFocusPosition
     
     const observer = new IntersectionObserver(
       (entries) => {
-        // Process all entries to find the most centered one
-        let bestEntry = null
-        let bestDistance = Infinity
+        // Clear any pending update
+        if (updateTimeout) clearTimeout(updateTimeout)
         
-        entries.forEach((entry) => {
-          // Calculate how close to center this entry is
-          const rect = entry.boundingClientRect
-          const viewportCenter = entry.rootBounds.height / 2
-          const elementCenter = rect.top + rect.height / 2 - entry.rootBounds.top
-          const distanceFromCenter = Math.abs(elementCenter - viewportCenter)
+        // Debounce the update to avoid flickering
+        updateTimeout = setTimeout(() => {
+          // Get the current scroll position
+          const scrollTop = scrollWrapper.scrollTop
+          const scrollHeight = scrollWrapper.scrollHeight
+          const clientHeight = scrollWrapper.clientHeight
           
-          // Only consider entries that are at least 30% visible
-          // Note: We check intersection regardless of opacity
-          if (entry.isIntersecting && entry.intersectionRatio > 0.3) {
-            if (distanceFromCenter < bestDistance) {
-              bestDistance = distanceFromCenter
-              bestEntry = entry
+          // Find all currently visible pairs
+          const visiblePairs = []
+          const messagePairs = scrollWrapper.querySelectorAll('.message-pair')
+          
+          messagePairs.forEach((pair, index) => {
+            const rect = pair.getBoundingClientRect()
+            const scrollRect = scrollWrapper.getBoundingClientRect()
+            
+            // Calculate relative position within scroll container
+            const relativeTop = rect.top - scrollRect.top
+            const relativeBottom = rect.bottom - scrollRect.top
+            const pairHeight = rect.height
+            
+            // Check if pair is visible in viewport
+            if (relativeBottom > 0 && relativeTop < scrollRect.height) {
+              // Calculate how much of the pair is visible
+              const visibleTop = Math.max(0, relativeTop)
+              const visibleBottom = Math.min(scrollRect.height, relativeBottom)
+              const visibleHeight = visibleBottom - visibleTop
+              const visibilityRatio = visibleHeight / pairHeight
+              
+              // Calculate distance from center
+              const pairCenter = relativeTop + pairHeight / 2
+              const viewportCenter = scrollRect.height / 2
+              const distanceFromCenter = Math.abs(pairCenter - viewportCenter)
+              
+              if (visibilityRatio > 0.3) {
+                visiblePairs.push({
+                  index,
+                  visibilityRatio,
+                  distanceFromCenter
+                })
+              }
+            }
+          })
+          
+          // Find the best pair (most centered with good visibility)
+          if (visiblePairs.length > 0) {
+            const bestPair = visiblePairs.reduce((best, current) => {
+              // Prefer pairs that are more centered
+              if (current.distanceFromCenter < best.distanceFromCenter) {
+                return current
+              }
+              return best
+            })
+            
+            // Only update if it's different and makes sense
+            if (bestPair.index !== lastValidPairIndex) {
+              lastValidPairIndex = bestPair.index
+              setCurrentPairIndex(bestPair.index)
+              console.log('Current pair updated to:', bestPair.index + 1)
             }
           }
-        })
-        
-        // Update to the best entry found
-        if (bestEntry) {
-          const pairIndex = parseInt(bestEntry.target.dataset.pairIndex)
-          if (!isNaN(pairIndex)) {
-            setCurrentPairIndex(pairIndex)
-            console.log('Current pair updated to:', pairIndex + 1)
-          }
-        }
+        }, 100) // Debounce updates by 100ms
       },
       {
         root: scrollWrapper,
         rootMargin: '0px',
-        threshold: [0, 0.3, 0.5, 0.7, 1.0] // Multiple thresholds for better tracking
+        threshold: [0.3] // Single threshold to reduce callback frequency
       }
     )
     
@@ -221,7 +259,10 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode, onFocusPosition
     console.log('Found message pairs to observe:', messagePairs.length)
     messagePairs.forEach(pair => observer.observe(pair))
     
-    return () => observer.disconnect()
+    return () => {
+      observer.disconnect()
+      if (updateTimeout) clearTimeout(updateTimeout)
+    }
     }, 50) // Minimal delay for responsiveness
     
     return () => {
