@@ -60,8 +60,8 @@ const AIOrb = ({ chatExpanded, audioLevels = { level: 0, lowFreq: 0, highFreq: 0
       }}
       animate={{ 
         opacity: 1,
-        top: chatExpanded ? '11vh' : '50vh',
-        left: focusMode ? '30%' : '50%',
+        top: focusMode ? '35vh' : chatExpanded ? '11vh' : '50vh',
+        left: focusMode ? '25%' : '50%',
         x: '-50%',
         y: '-50%'
       }}
