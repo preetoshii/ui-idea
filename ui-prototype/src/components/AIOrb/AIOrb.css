@@ -1,11 +1,11 @@
 .ai-orb-container {
     width: 200px;
     height: 200px;
-    margin-bottom: 80px;
-    position: relative;
+    position: fixed;
     display: flex;
     align-items: center;
     justify-content: center;
+    z-index: 50;
 }
 
 .blob {

@@ -66,8 +66,8 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode, focusMode, setF
       } 
       // If last message is AI and previous is user, scroll to show the user message at top
       else if (lastMessage.type === 'ai' && secondToLastMessage?.type === 'user') {
-        // Enter focus mode for new AI responses
-        if (!singleDisplayMode) {
+        // Enter focus mode for new AI responses (only if this is actually a new message)
+        if (!singleDisplayMode && isNewMessage) {
           setFocusMode(true)
           // Don't scroll in focus mode
         } else {

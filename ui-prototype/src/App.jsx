@@ -274,7 +274,7 @@ function App() {
         />
 
         <AnimatePresence>
-          {!whiteboardMode && <AIOrb chatExpanded={chatExpanded} audioLevels={audioLevels} focusMode={focusMode} />}
+          {!whiteboardMode && <AIOrb key="ai-orb" chatExpanded={chatExpanded} audioLevels={audioLevels} focusMode={focusMode} />}
         </AnimatePresence>
 
         <AnimatePresence mode="wait">

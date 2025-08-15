@@ -19,12 +19,21 @@ const AIOrb = ({ chatExpanded, audioLevels = { level: 0, lowFreq: 0, highFreq: 0
   return (
     <motion.div 
       className="ai-orb-container"
-      initial={{ opacity: 0, scale: 0.8 }}
+      initial={{ 
+        opacity: 0, 
+        scale: 0.8,
+        top: '50vh',
+        left: '50%',
+        x: '-50%',
+        y: '-50%'
+      }}
       animate={{ 
         opacity: 1,
         scale: focusMode ? 1 : chatExpanded ? 0.5 : 1,
-        y: chatExpanded ? 'calc(-45vh + 100px)' : 0,
-        x: focusMode ? 'calc(-50vw + 400px)' : 0,
+        top: chatExpanded ? '11vh' : '50vh',
+        left: focusMode ? '30%' : '50%',
+        x: '-50%',
+        y: '-50%'
       }}
       exit={{ opacity: 0, scale: 0.8 }}
       transition={{
@@ -35,17 +44,18 @@ const AIOrb = ({ chatExpanded, audioLevels = { level: 0, lowFreq: 0, highFreq: 0
           damping: 20,
           mass: 1
         },
-        x: {
+        top: {
           type: "spring",
           stiffness: 100,
-          damping: 25,
-          mass: 1.5
+          damping: 25
         },
-        y: {
+        left: {
           type: "spring",
-          stiffness: 120,
-          damping: 20
-        }
+          stiffness: 100,
+          damping: 25
+        },
+        x: { duration: 0 }, // Instant
+        y: { duration: 0 }  // Instant
       }}
     >
       <motion.div
