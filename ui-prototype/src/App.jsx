@@ -153,6 +153,7 @@ function App() {
   const [speechEnabled, setSpeechEnabled] = useState(true)
   const [audioLevels, setAudioLevels] = useState({ level: 0, lowFreq: 0, highFreq: 0 })
   const [focusPosition, setFocusPosition] = useState(null)
+  const [waitingForAI, setWaitingForAI] = useState(false)
 
   useEffect(() => {
     const handleKeyPress = (e) => {
@@ -196,6 +197,9 @@ function App() {
       setMessages(prev => [...prev, userMessage])
     }
     
+    // Set waiting state
+    setWaitingForAI(true)
+    
     // Simulate AI response with streaming
     setTimeout(() => {
       const responses = [
@@ -236,6 +240,9 @@ function App() {
       } else {
         setMessages(prev => [...prev, aiMessage])
       }
+      
+      // Clear waiting state
+      setWaitingForAI(false)
       
       // Speak the AI response if enabled
       if (speechEnabled) {
@@ -290,6 +297,7 @@ function App() {
           isVisible={chatExpanded}
           singleDisplayMode={singleDisplayMode}
           onFocusPositionChange={setFocusPosition}
+          waitingForAI={waitingForAI}
         />
         
         <NewChatInput 

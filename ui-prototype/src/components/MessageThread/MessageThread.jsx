@@ -4,7 +4,7 @@ import AIMessage from './AIMessage'
 import UserMessage from './UserMessage'
 import './MessageThread.css'
 
-const MessageThread = ({ messages, isVisible, singleDisplayMode, onFocusPositionChange }) => {
+const MessageThread = ({ messages, isVisible, singleDisplayMode, onFocusPositionChange, waitingForAI }) => {
   const messagesEndRef = useRef(null)
   const [hasInitialized, setHasInitialized] = useState(false)
   const messageThreadRef = useRef(null)
@@ -13,7 +13,6 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode, onFocusPosition
   const [dynamicPadding, setDynamicPadding] = useState(100)
   const [showDebug, setShowDebug] = useState(false)
   const [focusedAIPosition, setFocusedAIPosition] = useState(null)
-  const [expectingNewMessage, setExpectingNewMessage] = useState(false)
   
   
   useEffect(() => {
@@ -117,15 +116,6 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode, onFocusPosition
     previousMessageCount.current = messages.length
     
     if (isNewMessage && messages.length > 0) {
-      // Check if we're expecting an AI response (last message is from user)
-      const lastMessage = messages[messages.length - 1]
-      if (lastMessage.type === 'user') {
-        setExpectingNewMessage(true)
-      } else if (lastMessage.type === 'ai') {
-        // AI message arrived, stop expecting
-        setExpectingNewMessage(false)
-      }
-      
       // Calculate the index of the last pair
       const totalPairs = Math.floor(messages.length / 2)
       const lastPairIndex = totalPairs - 1
@@ -272,13 +262,17 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode, onFocusPosition
     const totalPairs = Math.floor(messages.length / 2)
     const isInFocusMode = currentPairIndex === totalPairs - 1
     
+    // When waiting for AI response, maintain the current position
+    if (waitingForAI && focusedAIPosition) {
+      // Keep the orb where it is - don't update or reset
+      return
+    }
+    
     if (!isVisible || !isInFocusMode) {
-      // Not in focus mode, but keep position if expecting new message
-      if (!expectingNewMessage) {
-        setFocusedAIPosition(null)
-        if (onFocusPositionChange) {
-          onFocusPositionChange(null)
-        }
+      // Not in focus mode and not waiting - reset position
+      setFocusedAIPosition(null)
+      if (onFocusPositionChange) {
+        onFocusPositionChange(null)
       }
       return
     }
@@ -329,7 +323,7 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode, onFocusPosition
         scrollWrapper.removeEventListener('scroll', handleScroll)
       }
     }
-  }, [currentPairIndex, messages, isVisible, onFocusPositionChange, expectingNewMessage])
+  }, [currentPairIndex, messages, isVisible, onFocusPositionChange, waitingForAI, focusedAIPosition])
 
   return (
     <>
