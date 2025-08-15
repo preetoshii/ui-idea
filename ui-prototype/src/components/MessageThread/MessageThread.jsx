@@ -266,7 +266,7 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode, onFocusPosition
     // Debounced scroll handler for smoother updates
     const handleScroll = () => {
       if (scrollTimeout) clearTimeout(scrollTimeout)
-      scrollTimeout = setTimeout(updateAIPosition, 100) // Update after scroll stops
+      scrollTimeout = setTimeout(updateAIPosition, 800) // Wait 0.8s after scroll stops
     }
     
     // Update position with a slight delay to ensure DOM is ready
