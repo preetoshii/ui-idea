@@ -27,3 +27,71 @@
     bottom: -20px;
     right: 20px;
 }
+
+/* Responsive AI orb scaling */
+@media (max-height: 800px) {
+    .ai-orb-container {
+        width: 150px;
+        height: 150px;
+        margin-bottom: 60px;
+    }
+    
+    .blob-large {
+        width: 120px;
+        height: 195px;
+        top: -30px;
+        left: 15px;
+    }
+    
+    .blob-small {
+        width: 90px;
+        height: 90px;
+        bottom: -15px;
+        right: 15px;
+    }
+}
+
+@media (max-height: 600px) {
+    .ai-orb-container {
+        width: 120px;
+        height: 120px;
+        margin-bottom: 40px;
+    }
+    
+    .blob-large {
+        width: 96px;
+        height: 156px;
+        top: -24px;
+        left: 12px;
+    }
+    
+    .blob-small {
+        width: 72px;
+        height: 72px;
+        bottom: -12px;
+        right: 12px;
+    }
+}
+
+/* Very small screens */
+@media (max-height: 500px) {
+    .ai-orb-container {
+        width: 100px;
+        height: 100px;
+        margin-bottom: 30px;
+    }
+    
+    .blob-large {
+        width: 80px;
+        height: 130px;
+        top: -20px;
+        left: 10px;
+    }
+    
+    .blob-small {
+        width: 60px;
+        height: 60px;
+        bottom: -10px;
+        right: 10px;
+    }
+}

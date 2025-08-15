@@ -70,18 +70,38 @@ function App() {
     
     // Simulate AI response with streaming
     setTimeout(() => {
-      const fullResponse = "I understand your question. Let me process that for you. This response will fade in word by word to create a smooth streaming effect."
+      const responses = [
+        // Super short
+        "Got it! Yes, that makes sense.",
+        "Absolutely! Here's how.",
+        
+        // Short
+        "That's a great point. The key is to focus on simplicity and clarity in your approach.",
+        "I understand. This typically happens when the system detects an inconsistency in the data flow.",
+        
+        // Medium
+        "That's an interesting question! Let me think about that for a moment. The answer involves several interconnected concepts that I'll explain step by step. First, we need to understand the foundation.",
+        "Great observation! This is actually quite common in distributed systems. The pattern emerges when you have multiple nodes trying to coordinate their actions. Let me break down the mechanism for you.",
+        
+        // Long
+        "You've touched on something really fascinating here. This concept has evolved significantly over the past decade, and there are now multiple schools of thought on the best approach. The traditional method involves setting up a hierarchical structure, but newer methodologies favor a more distributed approach. Each has its trade-offs in terms of performance, maintainability, and scalability.",
+        
+        // Very long
+        "That's an excellent question that gets to the heart of modern system design. To fully understand this, we need to consider multiple layers of abstraction. At the lowest level, we're dealing with fundamental constraints of distributed computing - things like network latency, partial failures, and the CAP theorem. Moving up a layer, we encounter architectural patterns that attempt to work within these constraints: event sourcing, CQRS, saga patterns, and more. At the application level, these patterns manifest as specific implementation choices that affect everything from user experience to operational complexity. The interplay between these layers creates emergent behaviors that can be both powerful and challenging to manage. What's particularly interesting is how different organizations have evolved different solutions to these same fundamental problems, leading to a rich ecosystem of approaches we can learn from."
+      ]
+      
+      const randomResponse = responses[Math.floor(Math.random() * responses.length)]
       const aiMessage = {
         id: (Date.now() + 1).toString(),
         type: 'ai',
-        content: fullResponse,
+        content: randomResponse,
         timestamp: new Date(),
         isStreaming: true
       }
       setMessages(prev => [...prev, aiMessage])
       
       // Mark streaming complete after animation duration
-      const wordCount = fullResponse.split(' ').length
+      const wordCount = randomResponse.split(' ').length
       const animationDuration = wordCount * 80 + 800 // delay + fade duration
       
       setTimeout(() => {

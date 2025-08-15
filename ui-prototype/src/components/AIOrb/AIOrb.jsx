@@ -9,20 +9,20 @@ const AIOrb = ({ chatExpanded }) => {
       animate={{ 
         opacity: 1,
         scale: chatExpanded ? 0.5 : 1,
-        y: chatExpanded ? -450 : [0, -10, 0],
+        y: chatExpanded ? 'calc(-45vh + 100px)' : [0, -10, 0],
         x: chatExpanded ? 0 : 0,
       }}
       exit={{ opacity: 0, scale: 0.8 }}
       transition={{
         opacity: { duration: 0.3, delay: 0.6 },
         scale: { 
-          duration: 0.5, 
+          duration: 2.0, 
           delay: 0,
-          ease: "easeOut"
+          ease: [0.16, 1, 0.3, 1]
         },
         y: chatExpanded ? {
-          duration: 0.5,
-          ease: "easeOut"
+          duration: 2.0,
+          ease: [0.16, 1, 0.3, 1]
         } : {
           duration: 7.5,
           repeat: Infinity,

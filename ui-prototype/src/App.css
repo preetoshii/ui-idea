@@ -35,6 +35,14 @@ body {
     justify-content: center;
     position: relative;
     padding: 40px;
+    min-height: 100vh;
+}
+
+/* Responsive adjustments */
+@media (max-height: 600px) {
+    .main-content {
+        padding: 20px;
+    }
 }
 
 .app-container.grayscale {
