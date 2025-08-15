@@ -36,7 +36,7 @@
   flex: 1;
   overflow-y: auto;
   padding: 20px;
-  padding-bottom: 100px;
+  padding-bottom: 600px;
   display: flex;
   flex-direction: column;
   gap: 40px;
@@ -62,7 +62,7 @@
 .message-thread.has-focus {
   gap: 50px;
   padding-top: 60px;
-  padding-bottom: 100px;
+  padding-bottom: 600px;
 }
 
 /* Extra spacing after AI messages (completing a pair) */

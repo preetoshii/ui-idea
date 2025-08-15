@@ -91,8 +91,8 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode }) => {
     if (!focusMode) return
     
     const handleWheel = (e) => {
-      // Any scroll breaks focus mode
-      if (e.deltaY !== 0) {
+      // Only scroll up breaks focus mode (negative deltaY)
+      if (e.deltaY < 0) {
         setFocusMode(false)
       }
     }
