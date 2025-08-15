@@ -9,6 +9,7 @@ import CanvasToggle from './components/CanvasToggle/CanvasToggle'
 import CanvasBorder from './components/CanvasBorder/CanvasBorder'
 import AIOrb from './components/AIOrb/AIOrb'
 import MessageThread from './components/MessageThread/MessageThread'
+import CursorTooltip from './components/CursorTooltip/CursorTooltip'
 import './App.css'
 
 function App() {
@@ -249,6 +250,7 @@ function App() {
 
   return (
     <div className={`app-container ${grayscale ? 'grayscale' : ''}`}>
+      <CursorTooltip />
       <DotGridBackground isWhiteboardMode={whiteboardMode} />
       
       <Sidebar 

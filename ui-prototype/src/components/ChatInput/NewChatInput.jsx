@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import useTooltip from '../../hooks/useTooltip'
 import './NewChatInput.css'
 
 const NewChatInput = React.memo(({ onSendMessage, onExpandedChange }) => {
@@ -8,6 +9,12 @@ const NewChatInput = React.memo(({ onSendMessage, onExpandedChange }) => {
   const [inputValue, setInputValue] = useState('')
   const [shouldAnimateToggle, setShouldAnimateToggle] = useState(false)
   const inputRef = useRef(null)
+  
+  const chatTooltipProps = useTooltip('Switch to text mode')
+  const voiceTooltipProps = useTooltip('Switch to voice mode')
+  const sendTooltipProps = useTooltip('Send message')
+  const pauseTooltipProps = useTooltip('Pause the session')
+  const muteTooltipProps = useTooltip('Mute your mic')
   
   useEffect(() => {
     if (isExpanded && inputRef.current) {
@@ -52,14 +59,14 @@ const NewChatInput = React.memo(({ onSendMessage, onExpandedChange }) => {
         }}
         transition={{ duration: 0.2 }}
       >
-        <button className="voice-control-button">
+        <button className="voice-control-button" {...pauseTooltipProps}>
           <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
             <rect x="6" y="5" width="4" height="14"/>
             <rect x="14" y="5" width="4" height="14"/>
           </svg>
         </button>
         
-        <button className="voice-control-button">
+        <button className="voice-control-button" {...muteTooltipProps}>
           <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
             <path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3z"/>
             <path d="M17 11a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.93V21h2v-3.07A7 7 0 0 0 19 11h-2z"/>
@@ -119,6 +126,7 @@ const NewChatInput = React.memo(({ onSendMessage, onExpandedChange }) => {
         whileHover={{ opacity: 0.8 }}
         transition={{ duration: 0.2 }}
         style={{ cursor: isExpanded && inputValue ? 'default' : 'pointer' }}
+        {...(!isExpanded ? chatTooltipProps : (isExpanded && !inputValue ? voiceTooltipProps : {}))}
       >
         <AnimatePresence mode="wait">
           {isExpanded && inputValue ? (
@@ -136,6 +144,7 @@ const NewChatInput = React.memo(({ onSendMessage, onExpandedChange }) => {
                 onSendMessage?.(inputValue)
                 setInputValue('')
               }}
+              {...sendTooltipProps}
             >
               <svg viewBox="0 0 24 24" width="20" height="20" fill="white">
                 <path d="M7 14l5-5 5 5M12 19V9" strokeWidth="2" stroke="white" fill="none" strokeLinecap="round" strokeLinejoin="round"/>

@@ -1,7 +1,12 @@
 import { motion } from 'framer-motion'
+import useTooltip from '../../hooks/useTooltip'
 import './CanvasToggle.css'
 
 const CanvasToggle = ({ whiteboardMode, setWhiteboardMode }) => {
+  const tooltipProps = useTooltip(
+    whiteboardMode ? 'Exit canvas mode' : 'Switch to canvas mode for visual exploration'
+  )
+  
   return (
     <motion.div
       className={`whiteboard-toggle ${whiteboardMode ? 'active' : 'inactive'}`}
@@ -11,6 +16,7 @@ const CanvasToggle = ({ whiteboardMode, setWhiteboardMode }) => {
       animate={{
         opacity: whiteboardMode ? 1 : 0.7
       }}
+      {...tooltipProps}
     >
       <div className={`led-indicator ${whiteboardMode ? 'active' : ''}`} />
       Canvas Mode
