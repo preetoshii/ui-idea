@@ -191,6 +191,7 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode, onFocusPosition
           const distanceFromCenter = Math.abs(elementCenter - viewportCenter)
           
           // Only consider entries that are at least 30% visible
+          // Note: We check intersection regardless of opacity
           if (entry.isIntersecting && entry.intersectionRatio > 0.3) {
             if (distanceFromCenter < bestDistance) {
               bestDistance = distanceFromCenter
@@ -380,7 +381,7 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode, onFocusPosition
               const focusModeActive = currentPairIndex === messagePairs.length - 1
               
               const scale = isLatestPair && focusModeActive ? 1.15 : 1
-              const opacity = !isLatestPair && focusModeActive ? 0 : 1
+              const opacity = !isLatestPair && focusModeActive ? 0.05 : 1 // Use 0.05 instead of 0 for observer compatibility
               
               return (
                 <motion.div
