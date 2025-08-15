@@ -22,6 +22,16 @@ const AIOrb = () => {
         }
       }}
     >
+      <svg width="0" height="0" style={{ position: 'absolute' }}>
+        <defs>
+          <filter id="motionBlurRed" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="0,4" />
+          </filter>
+          <filter id="motionBlurBlue" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="1,0" />
+          </filter>
+        </defs>
+      </svg>
       <motion.svg
         className="blob blob-large"
         viewBox="0 0 200 200"
@@ -57,6 +67,7 @@ const AIOrb = () => {
         <path
           d="M100,20 C125,20 150,35 160,65 C170,95 165,125 155,155 C145,185 125,195 100,195 C75,195 55,185 45,155 C35,125 30,95 40,65 C50,35 75,20 100,20 Z"
           fill="#FF6B58"
+          filter="url(#motionBlurRed)"
         />
       </motion.svg>
       
@@ -95,6 +106,7 @@ const AIOrb = () => {
         <path
           d="M50,20 C65,20 75,30 75,45 C75,60 65,75 50,75 C35,75 20,65 20,50 C20,35 30,20 45,20 C47,20 49,20 50,20 Z"
           fill="#4BA3F5"
+          filter="url(#motionBlurBlue)"
         />
       </motion.svg>
     </motion.div>
