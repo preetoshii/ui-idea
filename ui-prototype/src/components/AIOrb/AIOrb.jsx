@@ -26,16 +26,16 @@ const AIOrb = () => {
         className="blob blob-large"
         viewBox="0 0 200 200"
         animate={{
-          rotate: [0, 360],
+          rotate: [-10, 10, -10],
           x: [0, -10, 0, 10, 0],
           y: [0, -15, 0, 15, 0],
           scale: [1, 1.05, 1, 0.95, 1]
         }}
         transition={{
           rotate: {
-            duration: 20,
+            duration: 6,
             repeat: Infinity,
-            ease: "linear"
+            ease: "easeInOut"
           },
           x: {
             duration: 7,
