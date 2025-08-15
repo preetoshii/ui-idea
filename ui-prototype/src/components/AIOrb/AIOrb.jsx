@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import useTooltip from '../../hooks/useTooltip'
 import './AIOrb.css'
 
-const AIOrb = ({ chatExpanded, audioLevels = { level: 0, lowFreq: 0, highFreq: 0 }, focusMode }) => {
+const AIOrb = ({ chatExpanded, audioLevels = { level: 0, lowFreq: 0, highFreq: 0 } }) => {
   // Create lagged versions of audio levels for different blob behaviors
   const [laggedLevels, setLaggedLevels] = useState({ level: 0, lowFreq: 0 })
   const [isHovered, setIsHovered] = useState(false)
@@ -60,8 +60,8 @@ const AIOrb = ({ chatExpanded, audioLevels = { level: 0, lowFreq: 0, highFreq: 0
       }}
       animate={{ 
         opacity: 1,
-        top: focusMode ? '35vh' : chatExpanded ? '11vh' : '50vh',
-        left: focusMode ? '25%' : '50%',
+        top: chatExpanded ? '11vh' : '50vh',
+        left: '50%',
         x: '-50%',
         y: '-50%'
       }}
@@ -97,8 +97,8 @@ const AIOrb = ({ chatExpanded, audioLevels = { level: 0, lowFreq: 0, highFreq: 0
           scale: shouldPop 
             ? 1.2 
             : isHovered 
-              ? (focusMode ? 1.1 : chatExpanded ? 0.55 : 1.1) 
-              : (focusMode ? 1 : chatExpanded ? 0.5 : 1)
+              ? (chatExpanded ? 0.55 : 1.1) 
+              : (chatExpanded ? 0.5 : 1)
         }}
         transition={{
           scale: { 
@@ -116,7 +116,7 @@ const AIOrb = ({ chatExpanded, audioLevels = { level: 0, lowFreq: 0, highFreq: 0
       >
       <motion.div
         animate={{
-          y: !chatExpanded && !focusMode ? [0, -10, 0] : 0
+          y: !chatExpanded ? [0, -10, 0] : 0
         }}
         transition={{
           y: {
