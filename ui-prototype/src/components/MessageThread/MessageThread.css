@@ -3,7 +3,7 @@
   top: 80px;
   left: 50%;
   transform: translateX(-50%);
-  width: 700px;
+  width: 900px;
   max-width: 90vw;
   height: calc(100vh - 280px);
   display: flex;
@@ -44,7 +44,7 @@
 .ai-message-content {
   display: flex;
   align-items: flex-start;
-  max-width: 70%;
+  max-width: 60%;
 }
 
 
@@ -63,7 +63,7 @@
 
 .user-message-content {
   display: flex;
-  max-width: 70%;
+  max-width: 60%;
 }
 
 .user-bubble {
