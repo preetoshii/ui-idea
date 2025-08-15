@@ -5,7 +5,6 @@ const AIMessage = ({ message }) => {
   return (
     <Message message={message}>
       <div className="ai-message-content">
-        <div className="ai-avatar">AI</div>
         <div className="message-bubble ai-bubble">
           <span className="message-text">{message.content}</span>
           {message.isStreaming && (
