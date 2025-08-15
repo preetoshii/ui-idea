@@ -10,6 +10,7 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode }) => {
   const messageThreadRef = useRef(null)
   const previousMessageCount = useRef(messages.length)
   const [currentPairIndex, setCurrentPairIndex] = useState(null)
+  const [dynamicPadding, setDynamicPadding] = useState(100)
   
   
   useEffect(() => {
@@ -17,6 +18,40 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode }) => {
       setHasInitialized(true)
     }
   }, [isVisible, hasInitialized])
+  
+  // Calculate dynamic padding based on viewport and last pair
+  useEffect(() => {
+    const calculatePadding = () => {
+      const scrollWrapper = messageThreadRef.current?.parentElement
+      if (!scrollWrapper) return
+      
+      const messagePairs = scrollWrapper.querySelectorAll('.message-pair')
+      const lastPair = messagePairs[messagePairs.length - 1]
+      
+      if (lastPair) {
+        // Get viewport height and last pair height
+        const viewportHeight = scrollWrapper.clientHeight
+        const lastPairHeight = lastPair.offsetHeight
+        
+        // Calculate padding needed to center the last pair when scrolled to bottom
+        // We want the last pair to be centered, so we need (viewport - pairHeight) / 2
+        const idealPadding = Math.max(100, (viewportHeight - lastPairHeight) / 2)
+        
+        setDynamicPadding(Math.round(idealPadding))
+      }
+    }
+    
+    // Calculate on mount and when messages change
+    const timer = setTimeout(calculatePadding, 100)
+    
+    // Also recalculate on window resize
+    window.addEventListener('resize', calculatePadding)
+    
+    return () => {
+      clearTimeout(timer)
+      window.removeEventListener('resize', calculatePadding)
+    }
+  }, [messages, isVisible])
 
   const scrollToLatestPair = () => {
     const scrollWrapper = messagesEndRef.current?.parentElement?.parentElement
@@ -200,7 +235,7 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode }) => {
           }}
         >
           <div className="message-thread-scroll-wrapper">
-            <div className="message-thread" ref={messageThreadRef}>
+            <div className="message-thread" ref={messageThreadRef} style={{ paddingBottom: `${dynamicPadding}px` }}>
             {/* Debug indicator */}
             <div style={{
               position: 'fixed',
