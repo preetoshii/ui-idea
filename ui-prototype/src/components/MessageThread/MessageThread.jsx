@@ -10,12 +10,20 @@ const MessageThread = ({ messages, isVisible }) => {
   const scrollToBottom = () => {
     const messageThread = messagesEndRef.current?.parentElement
     if (messageThread) {
-      messageThread.scrollTop = messageThread.scrollHeight
+      messageThread.scrollTo({
+        top: messageThread.scrollHeight,
+        behavior: 'smooth'
+      })
     }
   }
 
   useEffect(() => {
-    scrollToBottom()
+    // Delay scroll to allow message animation to start
+    const timer = setTimeout(() => {
+      scrollToBottom()
+    }, 100)
+    
+    return () => clearTimeout(timer)
   }, [messages])
 
   return (
