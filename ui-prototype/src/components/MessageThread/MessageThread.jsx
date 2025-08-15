@@ -239,6 +239,8 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode, onFocusPosition
       return
     }
     
+    let scrollTimeout = null
+    
     const updateAIPosition = () => {
       // Find the AI message in the last pair
       const messagePairs = messageThreadRef.current?.querySelectorAll('.message-pair')
@@ -261,19 +263,26 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode, onFocusPosition
       }
     }
     
+    // Debounced scroll handler for smoother updates
+    const handleScroll = () => {
+      if (scrollTimeout) clearTimeout(scrollTimeout)
+      scrollTimeout = setTimeout(updateAIPosition, 100) // Update after scroll stops
+    }
+    
     // Update position with a slight delay to ensure DOM is ready
     const timer = setTimeout(updateAIPosition, 100)
     
     // Also update on scroll to track position changes
     const scrollWrapper = messageThreadRef.current?.parentElement
     if (scrollWrapper) {
-      scrollWrapper.addEventListener('scroll', updateAIPosition)
+      scrollWrapper.addEventListener('scroll', handleScroll)
     }
     
     return () => {
       clearTimeout(timer)
+      if (scrollTimeout) clearTimeout(scrollTimeout)
       if (scrollWrapper) {
-        scrollWrapper.removeEventListener('scroll', updateAIPosition)
+        scrollWrapper.removeEventListener('scroll', handleScroll)
       }
     }
   }, [currentPairIndex, messages, isVisible, onFocusPositionChange])
