@@ -21,6 +21,8 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode }) => {
   
   // Calculate dynamic padding based on viewport and last pair
   useEffect(() => {
+    const PADDING_MODIFIER = 1.3 // Increase this to add more padding (1.0 = centered, 1.5 = 50% more padding, etc.)
+    
     const calculatePadding = () => {
       const scrollWrapper = messageThreadRef.current?.parentElement
       if (!scrollWrapper) return
@@ -35,7 +37,9 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode }) => {
         
         // Calculate padding needed to center the last pair when scrolled to bottom
         // We want the last pair to be centered, so we need (viewport - pairHeight) / 2
-        const idealPadding = Math.max(100, (viewportHeight - lastPairHeight) / 2)
+        const basePadding = (viewportHeight - lastPairHeight) / 2
+        const modifiedPadding = basePadding * PADDING_MODIFIER
+        const idealPadding = Math.max(100, modifiedPadding)
         
         setDynamicPadding(Math.round(idealPadding))
       }
