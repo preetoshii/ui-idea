@@ -8,22 +8,32 @@ const CanvasToggle = ({ whiteboardMode, setWhiteboardMode }) => {
   )
   
   return (
-    <motion.div
-      className={`whiteboard-toggle ${whiteboardMode ? 'active' : 'inactive'}`}
-      onClick={() => setWhiteboardMode(!whiteboardMode)}
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
-      animate={{
-        opacity: whiteboardMode ? 1 : 0.7
-      }}
-      {...tooltipProps}
-    >
-      <div className={`led-indicator ${whiteboardMode ? 'active' : ''}`} />
-      <div className="toggle-text">
-        Activity Mode
-        <span className="toggle-status">{whiteboardMode ? 'ON' : 'OFF'}</span>
-      </div>
-    </motion.div>
+    <>
+      <motion.div 
+        className="color-hint-centered"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 0.7 }}
+        transition={{ duration: 0.5, delay: 1 }}
+      >
+        Press / to view (some) color
+      </motion.div>
+      <motion.div
+        className={`whiteboard-toggle ${whiteboardMode ? 'active' : 'inactive'}`}
+        onClick={() => setWhiteboardMode(!whiteboardMode)}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        animate={{
+          opacity: whiteboardMode ? 1 : 0.7
+        }}
+        {...tooltipProps}
+      >
+        <div className={`led-indicator ${whiteboardMode ? 'active' : ''}`} />
+        <div className="toggle-text">
+          Activity Mode
+          <span className="toggle-status">{whiteboardMode ? 'ON' : 'OFF'}</span>
+        </div>
+      </motion.div>
+    </>
   )
 }
 

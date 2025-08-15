@@ -1,7 +1,21 @@
+.color-hint-centered {
+    position: fixed;
+    top: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 14px;
+    color: #444;
+    white-space: nowrap;
+    user-select: none;
+    letter-spacing: 0.5px;
+    z-index: 54;
+}
+
 .whiteboard-toggle {
-    position: absolute;
+    position: fixed;
     top: 40px;
     right: 40px;
+    z-index: 55;
     padding: 16px 32px;
     background: transparent;
     border: 1.8px solid #333;

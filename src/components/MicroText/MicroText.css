@@ -1,3 +1,16 @@
+/* Backdrop for dimming and blur */
+.micro-text-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 44;
+}
+
 .micro-text-container {
   position: fixed;
   bottom: 160px; /* Increased spacing above the chat input */
@@ -10,6 +23,11 @@
   margin: 0 auto;
   left: 0;
   right: 0;
+}
+
+.micro-text-content {
+  position: relative;
+  width: 100%;
 }
 
 .micro-text-wrapper {
@@ -68,10 +86,52 @@
   color: #333;
 }
 
+/* User message card on hover */
+.micro-text-user-card {
+  position: absolute;
+  bottom: calc(100% + 20px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 500px;
+  max-width: 90vw;
+}
+
+/* Override user message styles for micro text */
+.micro-text-user-card .message-user {
+  justify-content: center;
+  width: 100%;
+}
+
+.micro-text-user-card .user-message-content {
+  max-width: 100%;
+  margin: 0;
+}
+
+.micro-text-user-card .user-bubble {
+  background: #f0f0f0;
+  border: 1px solid #e0e0e0;
+  padding: 16px 24px;
+  text-align: left;
+}
+
+.micro-text-user-card .message-text {
+  color: #333;
+  font-size: 14px;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .micro-text-container {
     width: 100%;
     padding: 0 20px;
+  }
+  
+  .micro-text-user-card {
+    width: 100%;
+    left: 0;
+    right: 0;
+    transform: none;
+    margin: 0 20px;
+    width: calc(100% - 40px);
   }
 }

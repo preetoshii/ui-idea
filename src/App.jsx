@@ -297,6 +297,7 @@ function App() {
         <MicroText 
           messages={messages}
           isVisible={chatExpanded && (collapsedMode || whiteboardMode)}
+          waitingForAI={waitingForAI}
         />
         
         <NewChatInput 
