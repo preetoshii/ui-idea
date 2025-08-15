@@ -171,11 +171,8 @@ const NewChatInput = React.memo(({ onSendMessage, onExpandedChange }) => {
                 }}
                 whileHover={{ scale: 1.25 }}
                 transition={{ 
-                  y: { duration: shouldAnimateToggle ? 0.3 : 0, delay: shouldAnimateToggle && !isExpanded ? 0.3 : 0 },
-                  opacity: { 
-                    duration: shouldAnimateToggle ? (isExpanded ? 0.3 : 0.5) : 0.1,
-                    delay: shouldAnimateToggle && !isExpanded ? 0.3 : 0
-                  },
+                  y: { duration: 0.2 },
+                  opacity: { duration: 0.2 },
                   scale: { duration: 0.1 }
                 }}
               >
@@ -195,11 +192,8 @@ const NewChatInput = React.memo(({ onSendMessage, onExpandedChange }) => {
                 }}
                 whileHover={{ scale: 1.25 }}
                 transition={{ 
-                  y: { duration: shouldAnimateToggle ? 0.3 : 0, delay: shouldAnimateToggle && isExpanded ? 0.3 : 0 },
-                  opacity: { 
-                    duration: shouldAnimateToggle ? (isExpanded ? 0.5 : 0.3) : 0.1,
-                    delay: shouldAnimateToggle && isExpanded ? 0.3 : 0
-                  },
+                  y: { duration: 0.2 },
+                  opacity: { duration: 0.2 },
                   scale: { duration: 0.1 }
                 }}
               >

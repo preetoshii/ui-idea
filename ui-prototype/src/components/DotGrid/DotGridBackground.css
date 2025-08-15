@@ -14,7 +14,7 @@
     height: 150%;
     top: -25%;
     left: -25%;
-    background-image: radial-gradient(circle, #aaa 1.5px, transparent 1.5px);
+    background-image: radial-gradient(circle, #999 1.5px, transparent 1.5px);
     background-size: 30px 30px;
 }
 

@@ -4,7 +4,7 @@ import './CanvasToggle.css'
 
 const CanvasToggle = ({ whiteboardMode, setWhiteboardMode }) => {
   const tooltipProps = useTooltip(
-    whiteboardMode ? 'Exit canvas mode' : 'Switch to canvas mode for visual exploration'
+    whiteboardMode ? 'Exit activity mode' : 'Jump into interactive exercises'
   )
   
   return (
@@ -19,7 +19,7 @@ const CanvasToggle = ({ whiteboardMode, setWhiteboardMode }) => {
       {...tooltipProps}
     >
       <div className={`led-indicator ${whiteboardMode ? 'active' : ''}`} />
-      Canvas Mode
+      Activity Mode
     </motion.div>
   )
 }

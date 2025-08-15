@@ -86,7 +86,9 @@ const CursorTooltip = () => {
           exit={{ opacity: 0, scale: 0.8 }}
           transition={{ duration: 0.15, ease: 'easeOut' }}
           style={{
-            left: mousePos.x + 20,
+            left: mousePos.x > window.innerWidth * 0.7 
+              ? mousePos.x - 20 - (tooltip.text.length * 8) // Rough estimate of tooltip width
+              : mousePos.x + 20,
             top: mousePos.y - 10,
           }}
         >

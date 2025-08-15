@@ -4,10 +4,9 @@ import AIMessage from './AIMessage'
 import UserMessage from './UserMessage'
 import './MessageThread.css'
 
-const MessageThread = ({ messages, isVisible, singleDisplayMode }) => {
+const MessageThread = ({ messages, isVisible, singleDisplayMode, focusMode, setFocusMode }) => {
   const messagesEndRef = useRef(null)
   const [hasInitialized, setHasInitialized] = useState(false)
-  const [focusMode, setFocusMode] = useState(false)
   const messageThreadRef = useRef(null)
   const previousMessageCount = useRef(messages.length)
   

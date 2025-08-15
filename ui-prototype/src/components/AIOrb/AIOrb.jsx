@@ -2,7 +2,7 @@ import { motion } from 'framer-motion'
 import { useState, useEffect } from 'react'
 import './AIOrb.css'
 
-const AIOrb = ({ chatExpanded, audioLevels = { level: 0, lowFreq: 0, highFreq: 0 } }) => {
+const AIOrb = ({ chatExpanded, audioLevels = { level: 0, lowFreq: 0, highFreq: 0 }, focusMode }) => {
   // Create lagged versions of audio levels for different blob behaviors
   const [laggedLevels, setLaggedLevels] = useState({ level: 0, lowFreq: 0 })
   
@@ -22,28 +22,48 @@ const AIOrb = ({ chatExpanded, audioLevels = { level: 0, lowFreq: 0, highFreq: 0
       initial={{ opacity: 0, scale: 0.8 }}
       animate={{ 
         opacity: 1,
-        scale: chatExpanded ? 0.5 : 1,
-        y: chatExpanded ? 'calc(-45vh + 100px)' : [0, -10, 0],
-        x: chatExpanded ? 0 : 0,
+        scale: focusMode ? 1 : chatExpanded ? 0.5 : 1,
+        y: chatExpanded ? 'calc(-45vh + 100px)' : 0,
+        x: focusMode ? 'calc(-50vw + 400px)' : 0,
       }}
       exit={{ opacity: 0, scale: 0.8 }}
       transition={{
-        opacity: { duration: 0.3, delay: 0.6 },
+        opacity: { duration: 0.3 },
         scale: { 
-          duration: 2.0, 
-          delay: 0,
-          ease: [0.16, 1, 0.3, 1]
+          type: "spring",
+          stiffness: 120,
+          damping: 20,
+          mass: 1
         },
-        y: chatExpanded ? {
-          duration: 2.0,
-          ease: [0.16, 1, 0.3, 1]
-        } : {
-          duration: 7.5,
-          repeat: Infinity,
-          ease: "easeInOut"
+        x: {
+          type: "spring",
+          stiffness: 100,
+          damping: 25,
+          mass: 1.5
+        },
+        y: {
+          type: "spring",
+          stiffness: 120,
+          damping: 20
         }
       }}
     >
+      <motion.div
+        animate={{
+          y: !chatExpanded && !focusMode ? [0, -10, 0] : 0
+        }}
+        transition={{
+          y: {
+            duration: 7.5,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }
+        }}
+        style={{
+          width: '100%',
+          height: '100%'
+        }}
+      >
       <motion.div
         animate={{
           scale: 1 + audioLevels.level * 0.3,
@@ -151,6 +171,7 @@ const AIOrb = ({ chatExpanded, audioLevels = { level: 0, lowFreq: 0, highFreq: 0
           }}
         />
       </motion.svg>
+      </motion.div>
       </motion.div>
     </motion.div>
   )
