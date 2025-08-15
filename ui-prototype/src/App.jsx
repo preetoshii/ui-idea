@@ -43,6 +43,7 @@ function App() {
     }
   ])
   const [chatExpanded, setChatExpanded] = useState(false)
+  const [singleDisplayMode, setSingleDisplayMode] = useState(false)
 
   useEffect(() => {
     const handleKeyPress = (e) => {
@@ -59,14 +60,16 @@ function App() {
   const sendMessage = (content) => {
     if (!content.trim()) return
     
-    // Add user message
-    const userMessage = {
-      id: Date.now().toString(),
-      type: 'user',
-      content,
-      timestamp: new Date()
+    if (!singleDisplayMode) {
+      // Normal mode: Add user message
+      const userMessage = {
+        id: Date.now().toString(),
+        type: 'user',
+        content,
+        timestamp: new Date()
+      }
+      setMessages(prev => [...prev, userMessage])
     }
-    setMessages(prev => [...prev, userMessage])
     
     // Simulate AI response with streaming
     setTimeout(() => {
@@ -98,19 +101,21 @@ function App() {
         timestamp: new Date(),
         isStreaming: true
       }
-      setMessages(prev => [...prev, aiMessage])
       
-      // Mark streaming complete after animation duration
-      const wordCount = randomResponse.split(' ').length
-      const animationDuration = wordCount * 80 + 800 // delay + fade duration
+      if (singleDisplayMode) {
+        // Single display mode: Add user message temporarily for processing
+        const userMessage = {
+          id: Date.now().toString(),
+          type: 'user',
+          content,
+          timestamp: new Date()
+        }
+        setMessages(prev => [...prev, userMessage, aiMessage])
+      } else {
+        setMessages(prev => [...prev, aiMessage])
+      }
       
-      setTimeout(() => {
-        setMessages(prev => prev.map(msg => 
-          msg.id === aiMessage.id 
-            ? { ...msg, isStreaming: false }
-            : msg
-        ))
-      }, animationDuration)
+      // No need to update streaming state - the animation completes on its own
     }, 1000)
   }
 
@@ -131,7 +136,10 @@ function App() {
       <div className="main-content">
         <CanvasToggle 
           whiteboardMode={whiteboardMode}
-          setWhiteboardMode={setWhiteboardMode}
+          setWhiteboardMode={(mode) => {
+            setWhiteboardMode(mode)
+            setSingleDisplayMode(mode) // Activate single display when entering canvas mode
+          }}
         />
 
         <AnimatePresence>
@@ -149,6 +157,7 @@ function App() {
         <MessageThread 
           messages={messages} 
           isVisible={chatExpanded}
+          singleDisplayMode={singleDisplayMode}
         />
         
         <NewChatInput 
