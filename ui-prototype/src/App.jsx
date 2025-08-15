@@ -14,7 +14,34 @@ function App() {
   const [sidebarHovered, setSidebarHovered] = useState(false)
   const [whiteboardMode, setWhiteboardMode] = useState(false)
   const [grayscale, setGrayscale] = useState(true)
-  const [messages, setMessages] = useState([])
+  const [messages, setMessages] = useState([
+    {
+      id: '1',
+      type: 'user',
+      content: 'Hey, can you help me understand how quantum computing works?',
+      timestamp: new Date(Date.now() - 60000)
+    },
+    {
+      id: '2',
+      type: 'ai',
+      content: 'Of course! Quantum computing uses quantum bits (qubits) instead of classical bits. While classical bits can only be 0 or 1, qubits can exist in a superposition of both states simultaneously.',
+      timestamp: new Date(Date.now() - 50000),
+      isStreaming: false
+    },
+    {
+      id: '3',
+      type: 'user',
+      content: 'That sounds interesting! How does superposition actually work?',
+      timestamp: new Date(Date.now() - 40000)
+    },
+    {
+      id: '4',
+      type: 'ai',
+      content: 'Think of it like a coin spinning in the air - it\'s neither heads nor tails until it lands. Similarly, a qubit can be in multiple states at once until measured. This allows quantum computers to process many possibilities simultaneously, making them potentially much faster for certain types of problems.',
+      timestamp: new Date(Date.now() - 30000),
+      isStreaming: false
+    }
+  ])
   const [chatExpanded, setChatExpanded] = useState(false)
 
   useEffect(() => {
