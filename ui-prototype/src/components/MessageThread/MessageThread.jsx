@@ -167,42 +167,72 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode, onFocusPosition
     const scrollWrapper = messageThreadRef.current?.parentElement
     if (!scrollWrapper) return
     
+    // Function to find the most centered pair
+    const findCenteredPair = () => {
+      const messagePairs = scrollWrapper.querySelectorAll('.message-pair')
+      let bestIndex = null
+      let bestDistance = Infinity
+      
+      messagePairs.forEach((pair, index) => {
+        const rect = pair.getBoundingClientRect()
+        const scrollRect = scrollWrapper.getBoundingClientRect()
+        
+        // Calculate relative position
+        const pairCenter = rect.top + rect.height / 2
+        const viewportCenter = scrollRect.top + scrollRect.height / 2
+        const distance = Math.abs(pairCenter - viewportCenter)
+        
+        // Check if pair is reasonably visible
+        const visibleTop = Math.max(0, rect.top - scrollRect.top)
+        const visibleBottom = Math.min(scrollRect.height, rect.bottom - scrollRect.top)
+        const visibleHeight = visibleBottom - visibleTop
+        const visibilityRatio = visibleHeight / rect.height
+        
+        if (visibilityRatio > 0.3 && distance < bestDistance) {
+          bestDistance = distance
+          bestIndex = index
+        }
+      })
+      
+      if (bestIndex !== null) {
+        setCurrentPairIndex(bestIndex)
+      }
+    }
+    
+    // Intersection observer with dual thresholds
     const observer = new IntersectionObserver(
       (entries) => {
-        // Find the most centered visible entry
-        let bestEntry = null
-        let bestDistance = Infinity
-        
-        entries.forEach((entry) => {
-          if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
-            const rect = entry.boundingClientRect
-            const center = rect.top + rect.height / 2
-            const viewportCenter = entry.rootBounds.height / 2
-            const distance = Math.abs(center - viewportCenter)
-            
-            if (distance < bestDistance) {
-              bestDistance = distance
-              bestEntry = entry
-            }
-          }
-        })
-        
-        if (bestEntry) {
-          const pairIndex = parseInt(bestEntry.target.dataset.pairIndex)
-          setCurrentPairIndex(pairIndex)
-        }
+        // When any threshold is crossed, re-evaluate all pairs
+        findCenteredPair()
       },
       {
         root: scrollWrapper,
-        threshold: 0.5
+        threshold: [0.4, 0.6] // Dual thresholds for better edge detection
       }
     )
+    
+    // Lightweight scroll handler for additional robustness
+    let scrollTimeout
+    const handleScroll = () => {
+      clearTimeout(scrollTimeout)
+      scrollTimeout = setTimeout(findCenteredPair, 50)
+    }
+    
+    // Initial evaluation
+    findCenteredPair()
     
     // Observe all message pairs
     const messagePairs = scrollWrapper.querySelectorAll('.message-pair')
     messagePairs.forEach(pair => observer.observe(pair))
     
-    return () => observer.disconnect()
+    // Add scroll listener
+    scrollWrapper.addEventListener('scroll', handleScroll)
+    
+    return () => {
+      observer.disconnect()
+      scrollWrapper.removeEventListener('scroll', handleScroll)
+      clearTimeout(scrollTimeout)
+    }
   }, [messages, isVisible])
 
   // Find the latest AI message
