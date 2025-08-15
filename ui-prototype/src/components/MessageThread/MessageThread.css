@@ -1,11 +1,11 @@
 .message-thread-container {
   position: fixed;
-  top: 160px;
+  top: 280px;
   left: 50%;
   transform: translateX(-50%);
   width: 900px;
   max-width: 90vw;
-  height: calc(100vh - 360px);
+  height: calc(100vh - 480px);
   display: flex;
   flex-direction: column;
   z-index: 40;

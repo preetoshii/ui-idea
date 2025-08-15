@@ -9,7 +9,7 @@ const AIOrb = ({ chatExpanded }) => {
       animate={{ 
         opacity: 1,
         scale: chatExpanded ? 0.5 : 1,
-        y: chatExpanded ? -200 : [0, -10, 0],
+        y: chatExpanded ? -450 : [0, -10, 0],
         x: chatExpanded ? 0 : 0,
       }}
       exit={{ opacity: 0, scale: 0.8 }}
