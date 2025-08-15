@@ -11,14 +11,6 @@
 .blob {
     position: absolute;
     mix-blend-mode: multiply;
-    /* Fallback for browsers that don't support color-burn */
-}
-
-/* Try color-burn if supported */
-@supports (mix-blend-mode: color-burn) {
-    .blob {
-        mix-blend-mode: color-burn;
-    }
 }
 
 .blob-large {
