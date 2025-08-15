@@ -62,6 +62,13 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode }) => {
     previousMessageCount.current = messages.length
     
     if (isNewMessage && messages.length > 0) {
+      // Calculate the index of the last pair
+      const totalPairs = Math.floor(messages.length / 2)
+      const lastPairIndex = totalPairs - 1
+      
+      // Set focus mode to the newest pair
+      setCurrentPairIndex(lastPairIndex)
+      
       // Scroll to position the latest pair near the top
       setTimeout(() => {
         scrollToLatestPair()
