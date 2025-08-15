@@ -179,43 +179,49 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode, onFocusPosition
     
     const observer = new IntersectionObserver(
       (entries) => {
-        // Find the most visible entry
-        let mostVisibleEntry = null
-        let maxRatio = 0
+        // Process all entries to find the most centered one
+        let bestEntry = null
+        let bestDistance = Infinity
         
         entries.forEach((entry) => {
-          if (entry.isIntersecting && entry.intersectionRatio > maxRatio) {
-            maxRatio = entry.intersectionRatio
-            mostVisibleEntry = entry
+          // Calculate how close to center this entry is
+          const rect = entry.boundingClientRect
+          const viewportCenter = entry.rootBounds.height / 2
+          const elementCenter = rect.top + rect.height / 2 - entry.rootBounds.top
+          const distanceFromCenter = Math.abs(elementCenter - viewportCenter)
+          
+          // Only consider entries that are at least 30% visible
+          if (entry.isIntersecting && entry.intersectionRatio > 0.3) {
+            if (distanceFromCenter < bestDistance) {
+              bestDistance = distanceFromCenter
+              bestEntry = entry
+            }
           }
         })
         
-        // Only update if we have a clearly most visible entry (>50% visible)
-        if (mostVisibleEntry && mostVisibleEntry.intersectionRatio > 0.5) {
-          const pairIndex = parseInt(mostVisibleEntry.target.dataset.pairIndex)
-          setCurrentPairIndex(prevIndex => {
-            // Only update if it's actually different
-            if (prevIndex !== pairIndex) {
-              console.log('Current pair changed from', prevIndex, 'to', pairIndex)
-              return pairIndex
-            }
-            return prevIndex
-          })
+        // Update to the best entry found
+        if (bestEntry) {
+          const pairIndex = parseInt(bestEntry.target.dataset.pairIndex)
+          if (!isNaN(pairIndex)) {
+            setCurrentPairIndex(pairIndex)
+            console.log('Current pair updated to:', pairIndex + 1)
+          }
         }
       },
       {
         root: scrollWrapper,
-        rootMargin: '-20% 0px -20% 0px', // Only consider the middle 60% of viewport
-        threshold: [0.5] // Only fire when crossing 50% visibility
+        rootMargin: '0px',
+        threshold: [0, 0.3, 0.5, 0.7, 1.0] // Multiple thresholds for better tracking
       }
     )
     
     // Observe all message pairs
     const messagePairs = scrollWrapper.querySelectorAll('.message-pair')
+    console.log('Found message pairs to observe:', messagePairs.length)
     messagePairs.forEach(pair => observer.observe(pair))
     
     return () => observer.disconnect()
-    }, 100) // 100ms delay
+    }, 200) // Slightly longer delay for stability
     
     return () => {
       clearTimeout(timer)
