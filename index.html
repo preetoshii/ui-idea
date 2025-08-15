@@ -30,6 +30,7 @@
             width: 100%;
             height: 100%;
             z-index: -1;
+            perspective: 800px;
         }
 
         .dot-grid-surface {
@@ -40,20 +41,6 @@
             left: -25%;
             background-image: radial-gradient(circle, #aaa 1.5px, transparent 1.5px);
             background-size: 30px 30px;
-            transform-origin: center center;
-        }
-        
-        @keyframes scrollDots {
-            from {
-                background-position: 0 0;
-            }
-            to {
-                background-position: 0 30px;
-            }
-        }
-        
-        .dot-grid-surface.scrolling {
-            animation: scrollDots 2s linear infinite;
         }
 
         .app-container {
@@ -446,30 +433,21 @@
             // Dot Grid Background Component
             const DotGridBackground = ({ isWhiteboardMode }) => {
                 return (
-                    <motion.div 
-                        className="dot-grid-background"
-                        style={{ 
-                            perspective: 800,
-                            transformStyle: "preserve-3d"
-                        }}
-                    >
+                    <div className="dot-grid-background">
                         <motion.div 
-                            className={`dot-grid-surface ${isWhiteboardMode ? 'scrolling' : ''}`}
-                            style={{
-                                transformStyle: "preserve-3d"
-                            }}
+                            className="dot-grid-surface"
                             animate={{
                                 rotateX: isWhiteboardMode ? 65 : 0,
-                                translateZ: isWhiteboardMode ? -200 : 0,
-                                translateY: isWhiteboardMode ? 100 : 0,
+                                y: isWhiteboardMode ? 100 : 0,
+                                z: isWhiteboardMode ? -200 : 0,
                                 opacity: isWhiteboardMode ? 0.5 : 0.6
                             }}
-                            transition={{ 
+                            transition={{
                                 duration: 1.2,
-                                ease: [0.43, 0.13, 0.23, 0.96]  // Custom cubic-bezier for smoother feel
+                                ease: [0.43, 0.13, 0.23, 0.96]
                             }}
                         />
-                    </motion.div>
+                    </div>
                 );
             };
 
