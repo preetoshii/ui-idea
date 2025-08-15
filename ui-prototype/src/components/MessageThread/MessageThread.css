@@ -21,8 +21,7 @@
   /* Hide scrollbar */
   scrollbar-width: none;
   -ms-overflow-style: none;
-  /* Snap scrolling - proximity for more natural feel */
-  scroll-snap-type: y proximity;
+  /* Removed scroll snapping for free scrolling */
   /* Apply the gradient mask here instead */
   mask-image: linear-gradient(
     to bottom,
@@ -142,8 +141,7 @@
   flex-direction: column;
   gap: 40px;
   overflow: visible;
-  scroll-snap-align: center;
-  /* Removed scroll-snap-stop to allow skipping */
+  /* Removed scroll snapping for free scrolling */
   position: relative;
   /* Debug: Add visual border to see bounds */
   /* border: 2px solid red; */
