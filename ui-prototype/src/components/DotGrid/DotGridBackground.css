@@ -28,5 +28,6 @@
 }
 
 .dot-grid-surface.scrolling {
-    animation: scrollDots 2s linear infinite;
+    animation: scrollDots 1s linear infinite;
+    background-image: radial-gradient(circle, #666 1.5px, transparent 1.5px);
 }
