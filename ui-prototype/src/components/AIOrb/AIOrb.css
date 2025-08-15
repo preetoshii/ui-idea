@@ -8,6 +8,10 @@
     z-index: 50;
 }
 
+.ai-orb-scale-wrapper {
+    cursor: pointer;
+}
+
 .blob {
     position: absolute;
     mix-blend-mode: multiply;
@@ -93,4 +97,33 @@
         bottom: -10px;
         right: 10px;
     }
+}
+
+/* Mute button */
+.mute-button {
+    position: absolute;
+    top: -50px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.9);
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #333;
+    transition: all 0.2s ease;
+}
+
+.mute-button:hover {
+    background: rgba(255, 255, 255, 1);
+    border-color: rgba(0, 0, 0, 0.2);
+    transform: translateX(-50%) scale(1.1);
+}
+
+.mute-button:active {
+    transform: translateX(-50%) scale(0.95);
 }

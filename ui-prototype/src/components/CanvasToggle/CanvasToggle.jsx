@@ -19,7 +19,10 @@ const CanvasToggle = ({ whiteboardMode, setWhiteboardMode }) => {
       {...tooltipProps}
     >
       <div className={`led-indicator ${whiteboardMode ? 'active' : ''}`} />
-      Activity Mode
+      <div className="toggle-text">
+        Activity Mode
+        <span className="toggle-status">{whiteboardMode ? 'ON' : 'OFF'}</span>
+      </div>
     </motion.div>
   )
 }

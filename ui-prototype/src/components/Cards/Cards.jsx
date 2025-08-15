@@ -80,7 +80,6 @@ const Cards = () => {
               }
             }}
           >
-            Card {i}
           </motion.div>
         </motion.div>
       ))}
