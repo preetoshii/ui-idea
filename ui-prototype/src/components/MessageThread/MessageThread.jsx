@@ -162,112 +162,47 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode, onFocusPosition
   
   // Detect which message pair is currently in view
   useEffect(() => {
-    if (!isVisible) {
-      console.log('Component not visible, skipping observer setup')
-      return
-    }
+    if (!isVisible) return
     
-    let updateTimeout = null
-    let lastValidPairIndex = currentPairIndex
-    
-    // Add a small delay to ensure DOM is ready and animations are complete
-    const timer = setTimeout(() => {
-      const scrollWrapper = messageThreadRef.current?.parentElement
-      if (!scrollWrapper) {
-        console.log('No scrollWrapper ref after timeout!')
-        return
-      }
-      
-      console.log('Setting up intersection observer on:', scrollWrapper)
+    const scrollWrapper = messageThreadRef.current?.parentElement
+    if (!scrollWrapper) return
     
     const observer = new IntersectionObserver(
       (entries) => {
-        // Clear any pending update
-        if (updateTimeout) clearTimeout(updateTimeout)
+        // Find the most centered visible entry
+        let bestEntry = null
+        let bestDistance = Infinity
         
-        // Debounce the update to avoid flickering
-        updateTimeout = setTimeout(() => {
-          // Get the current scroll position
-          const scrollTop = scrollWrapper.scrollTop
-          const scrollHeight = scrollWrapper.scrollHeight
-          const clientHeight = scrollWrapper.clientHeight
-          
-          // Find all currently visible pairs
-          const visiblePairs = []
-          const messagePairs = scrollWrapper.querySelectorAll('.message-pair')
-          
-          messagePairs.forEach((pair, index) => {
-            const rect = pair.getBoundingClientRect()
-            const scrollRect = scrollWrapper.getBoundingClientRect()
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
+            const rect = entry.boundingClientRect
+            const center = rect.top + rect.height / 2
+            const viewportCenter = entry.rootBounds.height / 2
+            const distance = Math.abs(center - viewportCenter)
             
-            // Calculate relative position within scroll container
-            const relativeTop = rect.top - scrollRect.top
-            const relativeBottom = rect.bottom - scrollRect.top
-            const pairHeight = rect.height
-            
-            // Check if pair is visible in viewport
-            if (relativeBottom > 0 && relativeTop < scrollRect.height) {
-              // Calculate how much of the pair is visible
-              const visibleTop = Math.max(0, relativeTop)
-              const visibleBottom = Math.min(scrollRect.height, relativeBottom)
-              const visibleHeight = visibleBottom - visibleTop
-              const visibilityRatio = visibleHeight / pairHeight
-              
-              // Calculate distance from center
-              const pairCenter = relativeTop + pairHeight / 2
-              const viewportCenter = scrollRect.height / 2
-              const distanceFromCenter = Math.abs(pairCenter - viewportCenter)
-              
-              if (visibilityRatio > 0.3) {
-                visiblePairs.push({
-                  index,
-                  visibilityRatio,
-                  distanceFromCenter
-                })
-              }
-            }
-          })
-          
-          // Find the best pair (most centered with good visibility)
-          if (visiblePairs.length > 0) {
-            const bestPair = visiblePairs.reduce((best, current) => {
-              // Prefer pairs that are more centered
-              if (current.distanceFromCenter < best.distanceFromCenter) {
-                return current
-              }
-              return best
-            })
-            
-            // Only update if it's different and makes sense
-            if (bestPair.index !== lastValidPairIndex) {
-              lastValidPairIndex = bestPair.index
-              setCurrentPairIndex(bestPair.index)
-              console.log('Current pair updated to:', bestPair.index + 1)
+            if (distance < bestDistance) {
+              bestDistance = distance
+              bestEntry = entry
             }
           }
-        }, 50) // Reduced debounce for less lag
+        })
+        
+        if (bestEntry) {
+          const pairIndex = parseInt(bestEntry.target.dataset.pairIndex)
+          setCurrentPairIndex(pairIndex)
+        }
       },
       {
         root: scrollWrapper,
-        rootMargin: '0px',
-        threshold: [0.3] // Single threshold to reduce callback frequency
+        threshold: 0.5
       }
     )
     
     // Observe all message pairs
     const messagePairs = scrollWrapper.querySelectorAll('.message-pair')
-    console.log('Found message pairs to observe:', messagePairs.length)
     messagePairs.forEach(pair => observer.observe(pair))
     
-    return () => {
-      observer.disconnect()
-      if (updateTimeout) clearTimeout(updateTimeout)
-    }
-    }, 50) // Minimal delay for responsiveness
-    
-    return () => {
-      clearTimeout(timer)
-    }
+    return () => observer.disconnect()
   }, [messages, isVisible])
 
   // Find the latest AI message
