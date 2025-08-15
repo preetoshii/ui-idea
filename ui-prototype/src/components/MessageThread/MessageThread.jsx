@@ -188,7 +188,7 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode, onFocusPosition
         const visibleHeight = visibleBottom - visibleTop
         const visibilityRatio = visibleHeight / rect.height
         
-        if (visibilityRatio > 0.3 && distance < bestDistance) {
+        if (visibilityRatio > 0.2 && distance < bestDistance) {
           bestDistance = distance
           bestIndex = index
         }
@@ -207,7 +207,7 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode, onFocusPosition
       },
       {
         root: scrollWrapper,
-        threshold: [0.4, 0.6] // Dual thresholds for better edge detection
+        threshold: [0.2, 0.3, 0.4, 0.5, 0.6, 0.7] // More thresholds for higher sensitivity
       }
     )
     
@@ -215,7 +215,7 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode, onFocusPosition
     let scrollTimeout
     const handleScroll = () => {
       clearTimeout(scrollTimeout)
-      scrollTimeout = setTimeout(findCenteredPair, 50)
+      scrollTimeout = setTimeout(findCenteredPair, 30) // Faster response
     }
     
     // Initial evaluation
