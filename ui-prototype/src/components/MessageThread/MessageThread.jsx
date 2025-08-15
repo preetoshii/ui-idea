@@ -388,7 +388,7 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode, onFocusPosition
                   transition={{
                     scale: { 
                       duration: 0.6, 
-                      ease: [0.25, 0.1, 0.25, 1] // Custom cubic-bezier for smooth ease
+                      ease: "easeInOut"
                     },
                     opacity: { 
                       duration: 0.5, 
