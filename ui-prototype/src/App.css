@@ -36,3 +36,13 @@ body {
     position: relative;
     padding: 40px;
 }
+
+.app-container.grayscale {
+    filter: grayscale(100%);
+    opacity: 0.7;
+    transition: filter 0.3s ease, opacity 0.3s ease;
+}
+
+.app-container:not(.grayscale) {
+    transition: filter 0.3s ease, opacity 0.3s ease;
+}

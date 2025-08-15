@@ -16,7 +16,7 @@ const AIOrb = () => {
         opacity: { duration: 0.3, delay: 0.6 },
         scale: { duration: 0.3, delay: 0.6 },
         y: {
-          duration: 3,
+          duration: 7.5,
           repeat: Infinity,
           ease: "easeInOut"
         }
@@ -33,22 +33,22 @@ const AIOrb = () => {
         }}
         transition={{
           rotate: {
-            duration: 6,
+            duration: 15,
             repeat: Infinity,
             ease: "easeInOut"
           },
           x: {
-            duration: 7,
+            duration: 17.5,
             repeat: Infinity,
             ease: "easeInOut"
           },
           y: {
-            duration: 5,
+            duration: 12.5,
             repeat: Infinity,
             ease: "easeInOut"
           },
           scale: {
-            duration: 8,
+            duration: 20,
             repeat: Infinity,
             ease: "easeInOut"
           }
@@ -71,22 +71,22 @@ const AIOrb = () => {
         }}
         transition={{
           rotate: {
-            duration: 15,
+            duration: 37.5,
             repeat: Infinity,
             ease: "linear"
           },
           x: {
-            duration: 6,
+            duration: 15,
             repeat: Infinity,
             ease: "easeInOut"
           },
           y: {
-            duration: 4,
+            duration: 10,
             repeat: Infinity,
             ease: "easeInOut"
           },
           scale: {
-            duration: 5,
+            duration: 12.5,
             repeat: Infinity,
             ease: "easeInOut"
           }

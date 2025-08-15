@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { AnimatePresence } from 'framer-motion'
 import Sidebar from './components/Sidebar/Sidebar'
 import DotGridBackground from './components/DotGrid/DotGridBackground'
@@ -12,9 +12,22 @@ import './App.css'
 function App() {
   const [sidebarHovered, setSidebarHovered] = useState(false)
   const [whiteboardMode, setWhiteboardMode] = useState(false)
+  const [grayscale, setGrayscale] = useState(true)
+
+  useEffect(() => {
+    const handleKeyPress = (e) => {
+      if (e.key === '/') {
+        e.preventDefault()
+        setGrayscale(!grayscale)
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyPress)
+    return () => window.removeEventListener('keydown', handleKeyPress)
+  }, [grayscale])
 
   return (
-    <div className="app-container">
+    <div className={`app-container ${grayscale ? 'grayscale' : ''}`}>
       <DotGridBackground isWhiteboardMode={whiteboardMode} />
       
       <Sidebar 
