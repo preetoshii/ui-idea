@@ -58,6 +58,12 @@
   );
 }
 
+/* Focus mode thread adjustments */
+.message-thread.has-focus {
+  gap: 50px;
+  padding-top: 60px;
+}
+
 /* Extra spacing after AI messages (completing a pair) */
 .message-wrapper.last-in-pair {
   margin-bottom: 80px;
@@ -105,6 +111,26 @@
 
 .message-wrapper.in-view {
   opacity: 1;
+}
+
+/* Focus mode styling */
+.message-wrapper.focus-mode .message-text {
+  font-size: 20px;
+  line-height: 2;
+}
+
+.message-wrapper.focus-mode .user-bubble {
+  padding: 48px 56px;
+}
+
+.message-wrapper.focus-mode .ai-bubble {
+  padding: 12px 0;
+}
+
+/* Scale the content within, not the wrapper */
+.message-wrapper.focus-mode .ai-message-content,
+.message-wrapper.focus-mode .user-message-content {
+  max-width: 70%;
 }
 
 /* AI Message styling */

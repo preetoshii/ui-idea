@@ -66,7 +66,6 @@ class SpeechService {
         const playPromise = this.currentAudio.play()
         this.setupAudioAnalysis()
         await playPromise
-        console.log('Audio playback started')
       } catch (error) {
         // Handle autoplay policy blocks
         console.warn('Audio playback blocked:', error)
@@ -102,7 +101,6 @@ class SpeechService {
   setupAudioAnalysis() {
     if (!this.currentAudio) return
     
-    console.log('Setting up audio analysis')
     
     try {
       // Create audio context and analyser
@@ -120,7 +118,6 @@ class SpeechService {
       const bufferLength = this.analyser.frequencyBinCount
       this.dataArray = new Uint8Array(bufferLength)
       
-      console.log('Audio analysis setup complete, starting update loop')
       
       // Start animation loop
       this.updateAudioLevels()
@@ -142,7 +139,6 @@ class SpeechService {
     }
     
     if (!this.audioLevelCallback) {
-      console.log('No audio level callback set')
       // Try again in case callback is set later
       setTimeout(() => this.updateAudioLevels(), 100)
       return
@@ -178,10 +174,6 @@ class SpeechService {
     // Call callback with audio data
     if (this.audioLevelCallback) {
       this.audioLevelCallback({ level, lowFreq, highFreq })
-      // Debug log occasionally
-      if (Math.random() < 0.1) {
-        console.log('Audio analysis:', { level, lowFreq, highFreq })
-      }
     }
     
     // Continue animation loop

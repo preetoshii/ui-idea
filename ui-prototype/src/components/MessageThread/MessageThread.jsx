@@ -7,6 +7,8 @@ import './MessageThread.css'
 const MessageThread = ({ messages, isVisible, singleDisplayMode }) => {
   const messagesEndRef = useRef(null)
   const [hasInitialized, setHasInitialized] = useState(false)
+  const [focusMode, setFocusMode] = useState(false)
+  const messageThreadRef = useRef(null)
   
   useEffect(() => {
     if (isVisible && !hasInitialized) {
@@ -53,9 +55,15 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode }) => {
       } 
       // If last message is AI and previous is user, scroll to show the user message at top
       else if (lastMessage.type === 'ai' && secondToLastMessage?.type === 'user') {
-        setTimeout(() => {
-          scrollToMessage(secondToLastMessage.id)
-        }, 100)
+        // Enter focus mode for new AI responses
+        if (!singleDisplayMode) {
+          setFocusMode(true)
+          // Don't scroll in focus mode
+        } else {
+          setTimeout(() => {
+            scrollToMessage(secondToLastMessage.id)
+          }, 100)
+        }
       } 
       // Otherwise just scroll to bottom
       else {
@@ -64,7 +72,33 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode }) => {
         }, 100)
       }
     }
-  }, [messages])
+  }, [messages, singleDisplayMode])
+  
+  // Set up scroll detection to break focus mode
+  useEffect(() => {
+    if (!focusMode) return
+    
+    const handleWheel = (e) => {
+      // Any scroll breaks focus mode
+      if (e.deltaY !== 0) {
+        setFocusMode(false)
+      }
+    }
+    
+    const handleClick = () => {
+      setFocusMode(false)
+    }
+    
+    // Add listeners to the document to catch all events
+    // Use capture phase for wheel to get it before any other handler
+    document.addEventListener('wheel', handleWheel, { capture: true, passive: false })
+    document.addEventListener('click', handleClick)
+    
+    return () => {
+      document.removeEventListener('wheel', handleWheel, { capture: true })
+      document.removeEventListener('click', handleClick)
+    }
+  }, [focusMode])
   
   // Set up intersection observer for fade effect
   useEffect(() => {
@@ -125,27 +159,42 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode }) => {
             }
           }}
         >
-          <div className="message-thread">
+          <div className={`message-thread ${focusMode ? 'has-focus' : ''}`} ref={messageThreadRef}>
         <AnimatePresence>
-          {messages.map((message) => {
+          {messages.map((message, index) => {
             const isLastInPair = message.type === 'ai'
             const isLatestAI = latestAIMessage && message.id === latestAIMessage.id
             const shouldShow = !singleDisplayMode || isLatestAI
             
             if (!shouldShow) return null
             
+            // In focus mode, determine if this message is part of the latest exchange
+            const lastUserIndex = messages.findLastIndex(m => m.type === 'user')
+            const isInLatestExchange = index >= lastUserIndex
+            const shouldHide = focusMode && !isInLatestExchange
+            
+            
             return (
-              <div 
+              <motion.div 
                 key={message.id} 
                 data-message-id={message.id}
-                className={`message-wrapper in-view ${isLastInPair ? 'last-in-pair' : ''}`}
+                className={`message-wrapper in-view ${isLastInPair ? 'last-in-pair' : ''} ${focusMode && isInLatestExchange ? 'focus-mode' : ''}`}
+                animate={{
+                  y: shouldHide ? '-150%' : 0,
+                  opacity: shouldHide ? 0 : 1,
+                  scale: 1
+                }}
+                transition={{
+                  duration: 0.5,
+                  ease: [0.16, 1, 0.3, 1]
+                }}
               >
                 {message.type === 'ai' ? (
                   <AIMessage message={message} />
                 ) : (
                   <UserMessage message={message} />
                 )}
-              </div>
+              </motion.div>
             )
           })}
         </AnimatePresence>
