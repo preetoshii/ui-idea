@@ -252,8 +252,16 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode, onFocusPosition
       scrollTimeout = setTimeout(updateAIPosition, 100) // Update after 100ms
     }
     
-    // Update position with a slight delay to ensure DOM is ready
-    const timer = setTimeout(updateAIPosition, 100)
+    // Initial position update
+    updateAIPosition()
+    
+    // Set up continuous updates while animations are happening
+    const animationInterval = setInterval(updateAIPosition, 16) // ~60fps updates
+    
+    // Stop continuous updates after animations complete
+    const stopContinuousUpdates = setTimeout(() => {
+      clearInterval(animationInterval)
+    }, 800) // Slightly longer than the focus mode animation duration (0.6s)
     
     // Also update on scroll to track position changes
     const scrollWrapper = messageThreadRef.current?.parentElement
@@ -262,7 +270,8 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode, onFocusPosition
     }
     
     return () => {
-      clearTimeout(timer)
+      clearInterval(animationInterval)
+      clearTimeout(stopContinuousUpdates)
       if (scrollTimeout) clearTimeout(scrollTimeout)
       if (scrollWrapper) {
         scrollWrapper.removeEventListener('scroll', handleScroll)
