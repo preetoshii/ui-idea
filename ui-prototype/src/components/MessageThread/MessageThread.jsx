@@ -116,10 +116,16 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode, onFocusPosition
     previousMessageCount.current = messages.length
     
     if (isNewMessage && messages.length > 0) {
+      // Calculate the index of the last pair
+      const totalPairs = Math.floor(messages.length / 2)
+      const lastPairIndex = totalPairs - 1
+      
+      // Set focus mode to the newest pair
+      setCurrentPairIndex(lastPairIndex)
+      
       // Scroll to position the latest pair near the top
       setTimeout(() => {
         scrollToLatestPair()
-        // The intersection observer will automatically set the current pair
       }, 50) // Minimal delay just to ensure DOM is updated
     }
   }, [messages, singleDisplayMode])
@@ -221,8 +227,11 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode, onFocusPosition
   
   // Update AI position to track focused pair's AI message
   useEffect(() => {
-    if (!isVisible || currentPairIndex === null) {
-      // No focused pair, reset position
+    const totalPairs = Math.floor(messages.length / 2)
+    const isInFocusMode = currentPairIndex === totalPairs - 1
+    
+    if (!isVisible || !isInFocusMode) {
+      // Not in focus mode, reset position
       setFocusedAIPosition(null)
       if (onFocusPositionChange) {
         onFocusPositionChange(null)
@@ -231,12 +240,12 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode, onFocusPosition
     }
     
     const updateAIPosition = () => {
-      // Find the AI message in the focused pair
+      // Find the AI message in the last pair
       const messagePairs = messageThreadRef.current?.querySelectorAll('.message-pair')
-      const focusedPair = messagePairs?.[currentPairIndex]
+      const lastPair = messagePairs?.[totalPairs - 1]
       
-      if (focusedPair) {
-        const aiMessage = focusedPair.querySelector('.ai-message-content')
+      if (lastPair) {
+        const aiMessage = lastPair.querySelector('.ai-message-content')
         if (aiMessage) {
           const rect = aiMessage.getBoundingClientRect()
           const newPosition = {
@@ -315,8 +324,8 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode, onFocusPosition
               }}>
                 <div>Current Pair: {currentPairIndex !== null ? currentPairIndex + 1 : 'None'}</div>
                 <div>Total Pairs: {Math.floor(messages.length / 2)}</div>
-                <div style={{color: currentPairIndex !== null ? '#4CAF50' : '#f44336'}}>
-                  Focus: {currentPairIndex !== null ? 'ON' : 'OFF'}
+                <div style={{color: currentPairIndex === Math.floor(messages.length / 2) - 1 ? '#4CAF50' : '#f44336'}}>
+                  Focus: {currentPairIndex === Math.floor(messages.length / 2) - 1 ? 'ON' : 'OFF'}
                 </div>
               </div>
             )}
@@ -352,11 +361,11 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode, onFocusPosition
               const isLatestPair = pairIndex === messagePairs.length - 1
               const isCurrentPair = pairIndex === currentPairIndex
               
-              // Focus mode when viewing any pair
-              const focusModeActive = currentPairIndex !== null
+              // Focus mode when viewing the last pair
+              const focusModeActive = currentPairIndex === messagePairs.length - 1
               
-              const scale = isCurrentPair ? 1.15 : 1
-              const opacity = focusModeActive && !isCurrentPair ? 0.3 : 1
+              const scale = isLatestPair && focusModeActive ? 1.15 : 1
+              const opacity = !isLatestPair && focusModeActive ? 0.3 : 1
               
               return (
                 <motion.div
