@@ -221,7 +221,7 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode, onFocusPosition
     messagePairs.forEach(pair => observer.observe(pair))
     
     return () => observer.disconnect()
-    }, 200) // Slightly longer delay for stability
+    }, 50) // Minimal delay for responsiveness
     
     return () => {
       clearTimeout(timer)
