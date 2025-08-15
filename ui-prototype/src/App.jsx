@@ -46,6 +46,7 @@ function App() {
   const [chatExpanded, setChatExpanded] = useState(false)
   const [singleDisplayMode, setSingleDisplayMode] = useState(false)
   const [speechEnabled, setSpeechEnabled] = useState(true)
+  const [audioLevels, setAudioLevels] = useState({ level: 0, lowFreq: 0, highFreq: 0 })
 
   useEffect(() => {
     const handleKeyPress = (e) => {
@@ -67,6 +68,13 @@ function App() {
       speechService.stop() // Stop speech on unmount
     }
   }, [grayscale, speechEnabled])
+  
+  // Set up audio level callback once
+  useEffect(() => {
+    speechService.setAudioLevelCallback((levels) => {
+      setAudioLevels(levels)
+    })
+  }, [])
 
   const sendMessage = (content) => {
     if (!content.trim()) return
@@ -162,7 +170,7 @@ function App() {
         />
 
         <AnimatePresence>
-          {!whiteboardMode && <AIOrb chatExpanded={chatExpanded} />}
+          {!whiteboardMode && <AIOrb chatExpanded={chatExpanded} audioLevels={audioLevels} />}
         </AnimatePresence>
 
         <AnimatePresence mode="wait">
