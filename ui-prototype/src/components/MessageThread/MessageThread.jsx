@@ -11,6 +11,7 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode }) => {
   const previousMessageCount = useRef(messages.length)
   const [currentPairIndex, setCurrentPairIndex] = useState(null)
   const [dynamicPadding, setDynamicPadding] = useState(100)
+  const [showDebug, setShowDebug] = useState(false)
   
   
   useEffect(() => {
@@ -18,6 +19,19 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode }) => {
       setHasInitialized(true)
     }
   }, [isVisible, hasInitialized])
+  
+  // Set up debug toggle
+  useEffect(() => {
+    const handleKeyPress = (e) => {
+      if (e.key === ']') {
+        e.preventDefault()
+        setShowDebug(prev => !prev)
+      }
+    }
+    
+    window.addEventListener('keydown', handleKeyPress)
+    return () => window.removeEventListener('keydown', handleKeyPress)
+  }, [])
   
   // Calculate dynamic padding based on viewport and last pair
   useEffect(() => {
@@ -241,24 +255,26 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode }) => {
           <div className="message-thread-scroll-wrapper">
             <div className="message-thread" ref={messageThreadRef} style={{ paddingBottom: `${dynamicPadding}px` }}>
             {/* Debug indicator */}
-            <div style={{
-              position: 'fixed',
-              top: '10px',
-              right: '10px',
-              background: 'rgba(0,0,0,0.8)',
-              color: 'white',
-              padding: '10px',
-              borderRadius: '5px',
-              fontSize: '14px',
-              fontFamily: 'monospace',
-              zIndex: 1000
-            }}>
-              <div>Current Pair: {currentPairIndex !== null ? currentPairIndex + 1 : 'None'}</div>
-              <div>Total Pairs: {Math.floor(messages.length / 2)}</div>
-              <div style={{color: currentPairIndex === Math.floor(messages.length / 2) - 1 ? '#4CAF50' : '#f44336'}}>
-                Focus: {currentPairIndex === Math.floor(messages.length / 2) - 1 ? 'ON' : 'OFF'}
+            {showDebug && (
+              <div style={{
+                position: 'fixed',
+                top: '10px',
+                right: '10px',
+                background: 'rgba(0,0,0,0.8)',
+                color: 'white',
+                padding: '10px',
+                borderRadius: '5px',
+                fontSize: '14px',
+                fontFamily: 'monospace',
+                zIndex: 1000
+              }}>
+                <div>Current Pair: {currentPairIndex !== null ? currentPairIndex + 1 : 'None'}</div>
+                <div>Total Pairs: {Math.floor(messages.length / 2)}</div>
+                <div style={{color: currentPairIndex === Math.floor(messages.length / 2) - 1 ? '#4CAF50' : '#f44336'}}>
+                  Focus: {currentPairIndex === Math.floor(messages.length / 2) - 1 ? 'ON' : 'OFF'}
+                </div>
               </div>
-            </div>
+            )}
         <AnimatePresence>
           {(() => {
             // Group messages into pairs
