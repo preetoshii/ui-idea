@@ -225,41 +225,56 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode, onFocusPosition
   // Find the latest AI message
   const latestAIMessage = messages.filter(m => m.type === 'ai').slice(-1)[0]
   
-  // Update AI position when focus mode changes
+  // Update AI position to track closest AI message
   useEffect(() => {
     if (!isVisible) return
     
+    let scrollTimeout = null
+    
     const updateAIPosition = () => {
-      const totalPairs = Math.floor(messages.length / 2)
-      const isInFocusMode = currentPairIndex === totalPairs - 1
+      const scrollWrapper = messageThreadRef.current?.parentElement
+      if (!scrollWrapper) return
       
-      if (isInFocusMode) {
-        // Find the AI message in the focused pair
-        const messagePairs = messageThreadRef.current?.querySelectorAll('.message-pair')
-        const focusedPair = messagePairs?.[currentPairIndex]
+      // Find all AI messages
+      const aiMessages = messageThreadRef.current?.querySelectorAll('.ai-message-content')
+      if (!aiMessages || aiMessages.length === 0) return
+      
+      // Get viewport center
+      const viewportCenter = window.innerHeight / 2
+      
+      // Find the AI message closest to viewport center
+      let closestMessage = null
+      let closestDistance = Infinity
+      
+      aiMessages.forEach(message => {
+        const rect = message.getBoundingClientRect()
+        const messageCenter = rect.top + rect.height / 2
+        const distance = Math.abs(messageCenter - viewportCenter)
         
-        if (focusedPair) {
-          const aiMessage = focusedPair.querySelector('.ai-message-content')
-          if (aiMessage) {
-            const rect = aiMessage.getBoundingClientRect()
-            const newPosition = {
-              left: rect.left - 150, // Position orb to the left of AI message
-              top: rect.top + rect.height / 2 // Center vertically on AI message
-            }
-            setFocusedAIPosition(newPosition)
-            // Notify parent component of position change
-            if (onFocusPositionChange) {
-              onFocusPositionChange(newPosition)
-            }
-          }
+        if (distance < closestDistance) {
+          closestDistance = distance
+          closestMessage = message
         }
-      } else {
-        setFocusedAIPosition(null)
-        // Notify parent component to reset position
+      })
+      
+      if (closestMessage) {
+        const rect = closestMessage.getBoundingClientRect()
+        const newPosition = {
+          left: rect.left - 150, // Position orb to the left of AI message
+          top: rect.top + rect.height / 2 // Center vertically on AI message
+        }
+        setFocusedAIPosition(newPosition)
+        // Notify parent component of position change
         if (onFocusPositionChange) {
-          onFocusPositionChange(null)
+          onFocusPositionChange(newPosition)
         }
       }
+    }
+    
+    // Debounced scroll handler
+    const handleScroll = () => {
+      if (scrollTimeout) clearTimeout(scrollTimeout)
+      scrollTimeout = setTimeout(updateAIPosition, 50) // Update after 50ms of no scrolling
     }
     
     // Update position with a slight delay to ensure DOM is ready
@@ -268,16 +283,17 @@ const MessageThread = ({ messages, isVisible, singleDisplayMode, onFocusPosition
     // Also update on scroll
     const scrollWrapper = messageThreadRef.current?.parentElement
     if (scrollWrapper) {
-      scrollWrapper.addEventListener('scroll', updateAIPosition)
+      scrollWrapper.addEventListener('scroll', handleScroll)
     }
     
     return () => {
       clearTimeout(timer)
+      if (scrollTimeout) clearTimeout(scrollTimeout)
       if (scrollWrapper) {
-        scrollWrapper.removeEventListener('scroll', updateAIPosition)
+        scrollWrapper.removeEventListener('scroll', handleScroll)
       }
     }
-  }, [currentPairIndex, messages, isVisible, onFocusPositionChange])
+  }, [messages, isVisible, onFocusPositionChange])
 
   return (
     <>
